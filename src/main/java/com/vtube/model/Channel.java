@@ -21,25 +21,28 @@ import lombok.Data;
 @Entity
 public class Channel {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 
 	@Column(name = "name")
 	private String name;
 
+	// One channel can have multiple videos
+	@OneToMany(mappedBy = "owner")
+	private Set<Video> ownedVideos;
+	
 	// One user can have multiple channels
 	@ManyToOne
-	@JoinTable(name = "users", joinColumns = @JoinColumn(name = "user_id"))
+	@JoinColumn(name="user_id", nullable = false)
 	private User owner;
-
-	// One channel can have multiple videos
-	@OneToMany
-	private Set<Video> ownedVideos;
 
 	// Many users can subscribe to many channels
 	@ManyToMany
-	@JoinTable(name = "subscribed_channels", joinColumns = @JoinColumn(name = "channel_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+	@JoinTable(
+			name = "subscribed_channels", 
+			joinColumns = @JoinColumn(name = "channel_id"), 
+			inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private Set<User> usersSubscribedToChannel;
 
 }

@@ -20,8 +20,8 @@ import lombok.Data;
 @Entity
 public class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
 	@Column(name = "nick_name", nullable = false, unique = true)
@@ -39,24 +39,19 @@ public class User {
 	@Column(name = "password", nullable = false, columnDefinition = "LONGTEXT")
 	private String password;
 
-	@Column(name = "age", nullable = false, columnDefinition = "UNSIGNED INT(11)")
+	@Column(name = "age", nullable = false)
 	private int age;
 	
 	//One user can have multiple channels
-	@OneToMany
+	@OneToMany(mappedBy = "owner")
 	private Set<Channel> ownedChannels;
 	
 	//One user can have many comments
-	@OneToMany
+	@OneToMany(mappedBy = "author")
 	private Set<Comment> comments;
 	
 	//User have videos he likes
     @ManyToMany
-//    (fetch = FetchType.LAZY,
-//            cascade = {
-//                CascadeType.PERSIST,
-//                CascadeType.MERGE
-//            })
     @JoinTable(
     		name= "liked_videos",
     		joinColumns= @JoinColumn(name= "user_id"),

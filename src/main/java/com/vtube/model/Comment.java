@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -19,8 +18,8 @@ import lombok.Data;
 @Entity
 public class Comment {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
 	@Column(name = "title", nullable = false, columnDefinition = "LONGTEXT")
@@ -32,18 +31,18 @@ public class Comment {
 	@Column(name = "dislikes", nullable = false)
 	private int dislikes = 0;
 	
-	//Every comment have an author
-	@ManyToOne
-	@JoinTable(name = "users", joinColumns = @JoinColumn(name = "user_id"))
-	private User author;
-	
-	//Every comment have video on which it is written
-	@ManyToOne
-	@JoinTable(name = "videos", joinColumns = @JoinColumn(name = "video_id"))
-	private Video commentedVideo;
-	
 	//Comment may have parent comment on which it is written
 	@OneToOne
 	@JoinColumn(foreignKey = @ForeignKey(name= "super_comment_id"))
 	private Comment superComment;
+	
+	//Every comment have an author
+	@ManyToOne
+	@JoinColumn(name="user_id", nullable = false)
+	private User author;
+	
+	//Every comment have video on which it is written
+	@ManyToOne
+	@JoinColumn(name="video_id", nullable = false)
+	private Video commentedVideo;
 }

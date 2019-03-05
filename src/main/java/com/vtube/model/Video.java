@@ -22,8 +22,8 @@ import lombok.Data;
 @Entity
 public class Video {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
 	@Column(name = "title", nullable = false, columnDefinition = "TEXT")
@@ -35,7 +35,6 @@ public class Video {
 	@Column(name = "url", nullable = false, columnDefinition = "TEXT")
 	private String url;
 	
-	//Must add this column in DB table
 	@Column(name="description", columnDefinition = "LONGTEXT")
 	private String description;
 	
@@ -45,14 +44,14 @@ public class Video {
 	@Column(name = "dislikes", nullable = false)
 	private int dislikes = 0;
 	
+	//one video can have many comments
+	@OneToMany(mappedBy = "commentedVideo")
+	private Set<Comment> comments;
+	
 	//one channel can have multiple videos
 	@ManyToOne
-	@JoinTable(name = "channels", joinColumns = @JoinColumn(name = "channel_id"))
+	@JoinColumn(name="channel_id", nullable = false)
 	private Channel owner;
-	
-	//one video can have many comments
-	@OneToMany
-	private Set<Comment> comments;
 	
 	//one video can be liked by many users
 	//User have videos he likes
