@@ -18,10 +18,9 @@ public class UserDTO {
 	@NonNull
 	private String nickName;
 	
-	@NonNull
-	private String email;
+	private Long numberOfSubscribers;
 	
 	private String profilePicture;
 	private int numberOfOwnVideos;
-	private int numberOfLikedVideos;	
+	private int numberOfLikedVideos;
 }

@@ -32,7 +32,10 @@ public class UserController {
 		signUpData.setPassword(PasswordHandler.encryptPassword(signUpData.getPassword()));
 		
 		HttpSession session = request.getSession();
-		UserDTO user = this.userService.createUser(signUpData);
+		UserDTO user = null;
+		
+		user = this.userService.createUser(signUpData);
+		
 		session.setAttribute("userId", user.getId());
 		
 		return user;
