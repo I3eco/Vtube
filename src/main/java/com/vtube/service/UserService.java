@@ -14,6 +14,9 @@ import com.vtube.dal.ChannnelsRepository;
 import com.vtube.dal.UsersRepository;
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
+import com.vtube.exceptions.EmailExistsException;
+import com.vtube.exceptions.InvalidEmailException;
+import com.vtube.exceptions.UserExistsException;
 import com.vtube.model.Channel;
 import com.vtube.model.User;
 
@@ -66,40 +69,28 @@ public class UserService {
 		return string == null || string.isEmpty();
 	}
 	
-	public boolean validateEmail(String email) {
+	public void validateEmail(String email) throws InvalidEmailException {
 		if (isNullOrEmpty(email)) {
-			return false;
+			throw new InvalidEmailException();
 		}
 		  try {
 		      InternetAddress emailAddr = new InternetAddress(email);
 		      emailAddr.validate();
 		   } catch (AddressException ex) {
-		      return false;
+			   throw new InvalidEmailException();
 		   }
-		return true;
 	}
 	
-	public boolean haveSameEmail(String email) {
-		@SuppressWarnings("unused")
-		User user = null;
-		
-		try {
-		 user = this.userRepository.findUserByEmail(email).get();
-		} catch (NoSuchElementException e) {
-			return false;
+	public void haveSameEmail(String email) throws EmailExistsException {
+		if(this.userRepository.findUserByEmail(email).isPresent()) {
+			throw new EmailExistsException();
 		}
-		return true;
 	}
 	
-	public boolean haveSameNickName(String nickName) {
-		@SuppressWarnings("unused")
-		User user = null;
-//		try {
-//		 user = this.userRepository.findUserByEmail(nickName).get();
-//		} catch (NoSuchElementException e) {
-//			return false;
-//		}
-		return this.userRepository.findAll().stream().anyMatch(u -> u.getNickName().equals(nickName));
+	public void haveSameNickName(String nickName) throws UserExistsException {
+		if(this.userRepository.findAll().stream().anyMatch(u -> u.getNickName().equals(nickName))) {
+			throw new UserExistsException();
+		}
 	}
 	
 	public String encryptPassword(String password) {		

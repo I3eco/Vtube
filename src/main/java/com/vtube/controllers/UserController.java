@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
+import com.vtube.exceptions.EmailExistsException;
+import com.vtube.exceptions.InvalidEmailException;
+import com.vtube.exceptions.UserExistsException;
 import com.vtube.service.UserService;
 
 @RestController
@@ -26,46 +29,26 @@ public class UserController {
 	
 	@PostMapping("/signup")
 	@ResponseBody
-	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response){
+	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response) throws EmailExistsException, UserExistsException, InvalidEmailException{
 		
 		String email = signUpData.getEmail();
 		String nickName = signUpData.getNickName();
 		System.out.println(nickName);
 		
-		if(!userService.validateEmail(email)) {
-			try {
-				response.sendError(400, "Invalid email!");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-		if(userService.haveSameEmail(email)) {
-			try {
-				response.sendError(400, "User with this email already exists!");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-		
-		if(userService.haveSameNickName(nickName)) {
-			try {
-				response.sendError(400, "User with this nick name already exists!");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-		
+		userService.validateEmail(email);
+		userService.haveSameEmail(email);
+		userService.haveSameNickName(nickName);
+
 		//encrypt user password
 		signUpData.setPassword(userService.encryptPassword(signUpData.getPassword()));
 		
+		//create session
 		HttpSession session = request.getSession();
-		UserDTO user = null;
 		
-		user = this.userService.createUser(signUpData);
+		//add user to db and return the properp object to be sent as response
+		UserDTO user = this.userService.createUser(signUpData);
 		
+		//add user id to session
 		session.setAttribute("userId", user.getId());
 		
 		return user;
