@@ -14,10 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vtube.UserValidation.InvalidPasswordException;
+import com.vtube.UserValidation.UserValidation;
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
 import com.vtube.exceptions.EmailExistsException;
+import com.vtube.exceptions.InvalidAgeException;
 import com.vtube.exceptions.InvalidEmailException;
+import com.vtube.exceptions.InvalidNameException;
 import com.vtube.exceptions.UserExistsException;
 import com.vtube.service.UserService;
 
@@ -29,7 +33,10 @@ public class UserController {
 	
 	@PostMapping("/signup")
 	@ResponseBody
-	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response) throws EmailExistsException, UserExistsException, InvalidEmailException{
+	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response) throws EmailExistsException, UserExistsException, InvalidEmailException, InvalidNameException, InvalidPasswordException, InvalidAgeException{
+		
+		UserValidation userValidation = new UserValidation();
+		userValidation.confirm(signUpData);
 		
 		String email = signUpData.getEmail();
 		String nickName = signUpData.getNickName();
