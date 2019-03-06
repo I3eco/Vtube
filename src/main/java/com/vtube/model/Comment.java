@@ -12,8 +12,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Data
+@NoArgsConstructor
 @Table(name="comments")
 @Entity
 public class Comment {
@@ -22,8 +25,9 @@ public class Comment {
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
-	@Column(name = "title", nullable = false, columnDefinition = "LONGTEXT")
-	private String title;
+	@Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
+	@NonNull
+	private String content;
 	
 	@Column(name = "likes", nullable = false)
 	private int likes = 0;
@@ -39,10 +43,12 @@ public class Comment {
 	//Every comment have an author
 	@ManyToOne
 	@JoinColumn(name="user_id", nullable = false)
+	@NonNull
 	private User author;
 	
 	//Every comment have video on which it is written
 	@ManyToOne
 	@JoinColumn(name="video_id", nullable = false)
+	@NonNull
 	private Video commentedVideo;
 }
