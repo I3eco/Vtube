@@ -7,6 +7,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.vtube.dal.ChannnelsRepository;
@@ -79,6 +80,7 @@ public class UserService {
 	}
 	
 	public boolean haveSameEmail(String email) {
+		@SuppressWarnings("unused")
 		User user = null;
 		
 		try {
@@ -90,6 +92,7 @@ public class UserService {
 	}
 	
 	public boolean haveSameNickName(String nickName) {
+		@SuppressWarnings("unused")
 		User user = null;
 //		try {
 //		 user = this.userRepository.findUserByEmail(nickName).get();
@@ -97,5 +100,15 @@ public class UserService {
 //			return false;
 //		}
 		return this.userRepository.findAll().stream().anyMatch(u -> u.getNickName().equals(nickName));
+	}
+	
+	public String encryptPassword(String password) {		
+		String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+		
+		return encryptedPassword;
+	}
+	
+	public boolean checkPasswordById(String password, String encryptedPassword) {
+		return BCrypt.checkpw(password, encryptedPassword);
 	}
 }

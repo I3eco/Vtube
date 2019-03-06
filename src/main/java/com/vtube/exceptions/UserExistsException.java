@@ -1,4 +1,4 @@
-package com.vtube.sexceptions;
+package com.vtube.exceptions;
 
 public class UserExistsException extends Exception {
 

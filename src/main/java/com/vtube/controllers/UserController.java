@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
-import com.vtube.security.PasswordHandler;
 import com.vtube.service.UserService;
 
 @RestController
@@ -60,7 +59,7 @@ public class UserController {
 		}
 		
 		//encrypt user password
-		signUpData.setPassword(PasswordHandler.encryptPassword(signUpData.getPassword()));
+		signUpData.setPassword(userService.encryptPassword(signUpData.getPassword()));
 		
 		HttpSession session = request.getSession();
 		UserDTO user = null;
