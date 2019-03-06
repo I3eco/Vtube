@@ -2,6 +2,9 @@ package com.vtube.service;
 
 import java.util.NoSuchElementException;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,5 +59,43 @@ public class UserService {
 		
 		return userDTO;
 		
+	}
+	
+	private boolean isNullOrEmpty(String string) {
+		return string == null || string.isEmpty();
+	}
+	
+	public boolean validateEmail(String email) {
+		if (isNullOrEmpty(email)) {
+			return false;
+		}
+		  try {
+		      InternetAddress emailAddr = new InternetAddress(email);
+		      emailAddr.validate();
+		   } catch (AddressException ex) {
+		      return false;
+		   }
+		return true;
+	}
+	
+	public boolean haveSameEmail(String email) {
+		User user = null;
+		
+		try {
+		 user = this.userRepository.findUserByEmail(email).get();
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean haveSameNickName(String nickName) {
+		User user = null;
+//		try {
+//		 user = this.userRepository.findUserByEmail(nickName).get();
+//		} catch (NoSuchElementException e) {
+//			return false;
+//		}
+		return this.userRepository.findAll().stream().anyMatch(u -> u.getNickName().equals(nickName));
 	}
 }

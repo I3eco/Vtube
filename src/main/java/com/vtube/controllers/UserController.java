@@ -27,7 +27,38 @@ public class UserController {
 	
 	@PostMapping("/signup")
 	@ResponseBody
-	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request){
+	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response){
+		
+		String email = signUpData.getEmail();
+		String nickName = signUpData.getNickName();
+		System.out.println(nickName);
+		
+		if(!userService.validateEmail(email)) {
+			try {
+				response.sendError(400, "Invalid email!");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		if(userService.haveSameEmail(email)) {
+			try {
+				response.sendError(400, "User with this email already exists!");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		if(userService.haveSameNickName(nickName)) {
+			try {
+				response.sendError(400, "User with this nick name already exists!");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
 		//encrypt user password
 		signUpData.setPassword(PasswordHandler.encryptPassword(signUpData.getPassword()));
 		
