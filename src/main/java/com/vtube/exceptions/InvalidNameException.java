@@ -1,7 +1,12 @@
 package com.vtube.exceptions;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Invalid input for name")
 public class InvalidNameException extends Exception {
 
+	
 	public InvalidNameException() {
 		super();
 		// TODO Auto-generated constructor stub
