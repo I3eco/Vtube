@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * This is representation of channel page view. Must be returned as JSON on GET -> /channel/id request
+ * This is representation of channel page view. Must be returned as JSON on GET -> /channel?id=(something) request
  * @author I3eco
  *
  */

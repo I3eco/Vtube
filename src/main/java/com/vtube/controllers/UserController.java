@@ -1,7 +1,6 @@
 package com.vtube.controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,10 +68,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/user/{id}")
-	public UserDTO getCourseById(@PathVariable long id) throws UserNotFoundException {
-//		if (session.getAttribute("userId") == null) {
-//			throw new UnauthorizedException("Are logni se pyrvo!");
-//		}
+	public UserDTO getUserById(@PathVariable long id) throws UserNotFoundException {
 		UserDTO user = this.userService.getUserDTOById(id);
 		return user;
 	}
