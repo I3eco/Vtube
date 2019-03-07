@@ -64,13 +64,8 @@ public class UserController {
 	}
 	
 	@GetMapping("/")
-	public void writeSomething(HttpServletResponse response) {
-		try {
-			PrintWriter writer = response.getWriter();
-			writer.println("Test");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void mainPage(HttpServletResponse response) throws IOException {
+		response.sendRedirect("https://vtubeto.postman.co");
 	}
 	
 	@GetMapping("/user/{id}")
