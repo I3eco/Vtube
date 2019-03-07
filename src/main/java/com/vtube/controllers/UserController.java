@@ -30,10 +30,8 @@ public class UserController {
 	@PostMapping("/signup")
 	@ResponseBody
 	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response) throws EmailExistsException, UserExistsException, InvalidEmailException{
-		
 		String email = signUpData.getEmail();
 		String nickName = signUpData.getNickName();
-		System.out.println(nickName);
 		
 		userService.validateEmail(email);
 		userService.haveSameEmail(email);
