@@ -1,17 +1,23 @@
-package com.vtube.UserValidation;
+package com.vtube.validations;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
+import org.springframework.stereotype.Component;
 
 import com.vtube.dto.SignUpDTO;
 import com.vtube.exceptions.InvalidAgeException;
 import com.vtube.exceptions.InvalidEmailException;
 import com.vtube.exceptions.InvalidNameException;
+import com.vtube.exceptions.InvalidPasswordException;
 
+@Component
 public class UserValidation {
 
 	private static final int MIN_NAME_LENGTH = 2;
 	private static final int MAX_NAME_LENGTH = 50;
 	private static final int MIN_AGE = 1;
 	private static final int MAX_AGE = 200;
-	private final static String EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
 	private static final int MIN_PASSWORD_LENGTH = 6;
 	private static final int MAX_PASSWORD_LENGTH = 50;
 	
@@ -27,10 +33,20 @@ public class UserValidation {
 		}
 	}
 	
+	private boolean isNullOrEmpty(String string) {
+		return string == null || string.isEmpty();
+	}
+	
 	private void confirmEmail(String email) throws InvalidEmailException {
-		if (email == null || email.length() == 0 || !email.matches(EMAIL_PATTERN)) {
-			throw new InvalidEmailException("Bad input!");
+		if (isNullOrEmpty(email)) {
+			throw new InvalidEmailException();
 		}
+		  try {
+		      InternetAddress emailAddr = new InternetAddress(email);
+		      emailAddr.validate();
+		   } catch (AddressException ex) {
+			   throw new InvalidEmailException();
+		   }
 	}
 	
 	private void confirmPassword(String password) throws InvalidPasswordException {

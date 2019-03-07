@@ -3,35 +3,36 @@ package com.vtube.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Invalid input for age")
-public class InvalidAgeException extends Exception {
+@ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No such user")
+public class UserNotFoundException extends Exception {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4795814490785288578L;
+	private static final long serialVersionUID = 1803513396113398224L;
 
-	public InvalidAgeException() {
+	public UserNotFoundException() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAgeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public UserNotFoundException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAgeException(String message, Throwable cause) {
+	public UserNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAgeException(String message) {
+	public UserNotFoundException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAgeException(Throwable cause) {
+	public UserNotFoundException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
@@ -40,5 +41,4 @@ public class InvalidAgeException extends Exception {
     public synchronized Throwable fillInStackTrace() {
         return this;
     }
-
 }

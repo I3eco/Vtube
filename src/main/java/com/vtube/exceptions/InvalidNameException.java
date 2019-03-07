@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Invalid input for name")
 public class InvalidNameException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 691773414457800246L;
 	
 	public InvalidNameException() {
 		super();
@@ -31,11 +35,11 @@ public class InvalidNameException extends Exception {
 		super(arg0);
 		// TODO Auto-generated constructor stub
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 691773414457800246L;
+	
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 
 
 }
