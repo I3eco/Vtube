@@ -24,7 +24,12 @@ public class CommentDTO {
 	@NonNull
 	private String userNickName;
 	
+	private long superCommentId;
 	private int likes;
 	private int dislikes;
 	List<CommentDTO> subComments;
+	
+	public void add(CommentDTO subCommentDTO) {
+		this.subComments.add(subCommentDTO);
+	}
 }

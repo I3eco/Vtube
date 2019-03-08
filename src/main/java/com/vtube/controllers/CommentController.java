@@ -45,11 +45,37 @@ public class CommentController {
 			CommentDTO commentDTO = new CommentDTO();
 			this.mapper.map(comment, commentDTO);
 			commentDTO.setUserNickName(userService.findById(comment.getAuthor().getId()).get().getNickName());
+			List<Comment> subComments = this.commentService.findAllByCommentId( (int)((long)comment.getId()) );
+			for (Comment c : subComments) {
+				CommentDTO subCommentDTO = new CommentDTO();
+				this.mapper.map(c, subCommentDTO);
+				subCommentDTO.setUserNickName(userService.findById(c.getAuthor().getId()).get().getNickName());
+				subCommentDTO.add(subCommentDTO);
+			}
 			commentDTOs.add(commentDTO);
 		}
 		return commentDTOs;
 	}
 	
+	@GetMapping("/commentReplies")
+	public List<CommentDTO> getCommentsBySupercomment(@RequestParam("commentId") Integer commentId) throws NoSuchVideoException {
+		
+		if (!this.commentService.findById(commentId)) {
+			throw new NoSuchVideoException("No such video!");
+		}
+		
+		List<Comment> comments = this.commentService.findAllByCommentId(commentId);
+		List<CommentDTO> commentDTOs = new LinkedList<CommentDTO>();
+		
+		for (Comment comment : comments) {
+			CommentDTO commentDTO = new CommentDTO();
+			this.mapper.map(comment, commentDTO);
+			commentDTO.setUserNickName(userService.findById(comment.getAuthor().getId()).get().getNickName());
+			commentDTO.setSuperCommentId(comment.getSuperComment().getId());
+			commentDTOs.add(commentDTO);
+		}
+		return commentDTOs;
+	}
 	
 	
 }

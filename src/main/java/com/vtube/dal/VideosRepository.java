@@ -10,7 +10,7 @@ import com.vtube.model.Video;
 @Repository
 public interface VideosRepository extends JpaRepository<Video, Long>{
 
-	Video findById(Integer videoId);
+	Optional<Video> findById(Integer videoId);
 
 	
 	

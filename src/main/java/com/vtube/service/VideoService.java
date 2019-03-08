@@ -25,7 +25,7 @@ public class VideoService {
 
 	public boolean findById(Integer videoId) {
 		try {
-			Video video = videosRepository.findById(videoId);
+			Video video = videosRepository.findById(videoId).get();
 		} catch (NoSuchElementException e) {
 			return false;
 		}
