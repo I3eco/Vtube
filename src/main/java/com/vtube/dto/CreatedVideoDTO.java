@@ -19,5 +19,8 @@ public class CreatedVideoDTO {
 	@NonNull
 	private String title;
 	
-	private String content;
+	@NonNull
+	private String url;
+	
+	private String description;
 }

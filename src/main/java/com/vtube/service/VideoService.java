@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 //import com.cloudinary.Cloudinary;
 //import com.cloudinary.utils.ObjectUtils;
 import com.vtube.dal.VideosRepository;
+import com.vtube.dto.CreatedVideoDTO;
 import com.vtube.dto.VideoToSaveDTO;
 import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
@@ -40,7 +41,7 @@ public class VideoService {
 	private static final String THUMBNAIL_DIR_NAME = "Picture";
 	private static final String SUPPORTED_VIDEO_FORMATS = "mp4 avi wmv";
 	private static final String SUPPORTED_THUMBNAIL_FORMATS = "jpeg jpg png gif";
-	private static final String UPLOAD_DIR = "E:\\IT Talents Java Course\\VTubeFileStorage\\";
+	private static final String UPLOAD_DIR = "..\\VTubeFileStorage\\";
 	
 //	private static final Cloudinary cloudinary = new Cloudinary
 //			("CLOUDINARY_URL=cloudinary://689344796343136:jpv4nWOWuPXqg-fYL0NFfxpAxVE@vtubeto");
@@ -65,7 +66,7 @@ public class VideoService {
 		return this.videosRepository.findById(videoId).get();
 	}
 	
-	public void uploadVideoData(MultipartFile file, MultipartFile thumbnail, String title, String description, Long ownerId, Channel channel) throws FileExistsException, VideoNotFoundException, UnsupportedFileFormatException {
+	public CreatedVideoDTO uploadVideoData(MultipartFile file, MultipartFile thumbnail, String title, String description, Long ownerId, Channel channel) throws FileExistsException, VideoNotFoundException, UnsupportedFileFormatException {
 		this.checkFileFormat(file, SUPPORTED_VIDEO_FORMATS, "Video");
 		this.checkFileFormat(thumbnail, SUPPORTED_THUMBNAIL_FORMATS, "Picture");
 		
@@ -87,7 +88,7 @@ public class VideoService {
 		}
 		
 		try {
-			videoUrl = this.saveFileToDir(thumbnail, THUMBNAIL_DIR_NAME, ownerId);
+			thumbnailUrl = this.saveFileToDir(thumbnail, THUMBNAIL_DIR_NAME, ownerId);
 		} catch (IOException e) {
 			throw new VideoNotFoundException();
 		}
@@ -95,16 +96,26 @@ public class VideoService {
 		videoToSave.setUrl(videoUrl);
 		videoToSave.setThumbnail(thumbnailUrl);
 		
-		this.saveFileToDB(videoToSave, channel);
+		Long videoId = this.saveFileToDB(videoToSave, channel);
+		
+		CreatedVideoDTO video = new CreatedVideoDTO();
+		video.setId(videoId);
+		video.setTitle(videoToSave.getTitle());
+		video.setDescription(videoToSave.getDescription());
+		video.setUrl(videoToSave.getUrl());
+		
+		return video;
 	}
 	
-	public void saveFileToDB(VideoToSaveDTO videoToSave, Channel channel) {
+	public Long saveFileToDB(VideoToSaveDTO videoToSave, Channel channel) {
 		Video video = this.modelMapper.map(videoToSave, Video.class);
 		
 		video.setDateOfCreation(LocalDate.now());
 		video.setOwner(channel);
 		
-		this.videosRepository.save(video);
+		Long id = this.videosRepository.save(video).getId();
+		
+		return id;
 	}
 	
 	//save file to directory and returns it's url

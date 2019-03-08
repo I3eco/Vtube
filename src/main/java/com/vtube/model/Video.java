@@ -1,7 +1,7 @@
 package com.vtube.model;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -54,7 +54,7 @@ public class Video {
 	
 	//one video can have many comments
 	@OneToMany(mappedBy = "commentedVideo")
-	private Set<Comment> comments;
+	private List<Comment> comments;
 	
 	//one channel can have multiple videos
 	@ManyToOne
@@ -70,7 +70,7 @@ public class Video {
                 CascadeType.MERGE
             }, 
             mappedBy = "likedVideos")
-    private Set<User> usersWhoLikeThisVideo;
+    private List<User> usersWhoLikeThisVideo;
     
     //History of watched videos for each user
     @ManyToMany(fetch = FetchType.LAZY,
@@ -79,7 +79,7 @@ public class Video {
         CascadeType.MERGE
     }, 
     mappedBy = "watchedVideos")
-    private Set<User> usersWatchedThisVideo;
+    private List<User> usersWatchedThisVideo;
     
     //Users can have videos for watching later
     @ManyToMany(fetch = FetchType.LAZY,
@@ -88,5 +88,5 @@ public class Video {
                 CascadeType.MERGE
             }, 
             mappedBy = "videosForLater")
-    private Set<User> usersWantToWatchThisVideoLater;
+    private List<User> usersWantToWatchThisVideoLater;
 }

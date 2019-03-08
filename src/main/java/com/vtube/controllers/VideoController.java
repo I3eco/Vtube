@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vtube.dto.CreatedVideoDTO;
 import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
 import com.vtube.exceptions.UserDoNotHaveChannelException;
@@ -33,7 +34,7 @@ public class VideoController {
 	
 	@PostMapping("/videos")
 	@ResponseBody
-	public Long uploadVideo(
+	public CreatedVideoDTO uploadVideo(
 			@RequestParam("file") MultipartFile file, @RequestParam("thumbnail") MultipartFile thumbnail, 
 			@RequestParam(name= "title", required = false) String title, @RequestParam(name="description", required = false) String description, 
 			HttpServletRequest request
@@ -47,9 +48,9 @@ public class VideoController {
 			throw new UserDoNotHaveChannelException("You do not have channel and cannot upload video!", e);
 		}
 		
-		this.videoService.uploadVideoData(file, thumbnail, title, description, userId, channel);
+		CreatedVideoDTO video = this.videoService.uploadVideoData(file, thumbnail, title, description, userId, channel);
 		
-		return (long) 1;
+		return video;
 	}
 	
 }

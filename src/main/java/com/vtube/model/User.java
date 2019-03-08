@@ -1,6 +1,6 @@
 package com.vtube.model;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -63,7 +63,7 @@ public class User {
 	
 	//One user can have many comments
 	@OneToMany(mappedBy = "author")
-	private Set<Comment> comments;
+	private List<Comment> comments;
 	
 	//User have videos he likes
     @ManyToMany(fetch = FetchType.LAZY,
@@ -75,7 +75,7 @@ public class User {
     		name= "liked_videos",
     		joinColumns= @JoinColumn(name= "user_id"),
     		inverseJoinColumns= @JoinColumn(name= "video_id"))
-    private Set<Video> likedVideos;
+    private List<Video> likedVideos;
     
     //Many users can subscribe to many channels
     @ManyToMany(fetch = FetchType.LAZY,
@@ -87,7 +87,7 @@ public class User {
     		name= "subscribed_channels",
     		joinColumns= @JoinColumn(name= "user_id"),
     		inverseJoinColumns= @JoinColumn(name= "channel_id"))
-    private Set<Channel> subscribedChannels;
+    private List<Channel> subscribedChannels;
     
     //History of watched videos for each user
     @ManyToMany(fetch = FetchType.LAZY,
@@ -99,7 +99,7 @@ public class User {
     		name= "videos_history",
     		joinColumns= @JoinColumn(name= "user_id"),
     		inverseJoinColumns= @JoinColumn(name= "video_id"))
-    private Set<Video> watchedVideos;
+    private List<Video> watchedVideos;
     
     //Users can have videos for watching later
     @ManyToMany(fetch = FetchType.LAZY,
@@ -111,5 +111,5 @@ public class User {
     		name= "watch_later",
     		joinColumns= @JoinColumn(name= "user_id"),
     		inverseJoinColumns= @JoinColumn(name= "video_id"))
-    private Set<Video> videosForLater;
+    private List<Video> videosForLater;
 }

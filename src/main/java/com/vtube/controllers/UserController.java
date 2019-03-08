@@ -90,7 +90,7 @@ public class UserController {
 	
 	@GetMapping("/logout")
 	@ResponseBody
-	public SimpleMessageDTO login(HttpServletRequest request){
+	public SimpleMessageDTO logout(HttpServletRequest request){
 		SimpleMessageDTO message = new SimpleMessageDTO();
 		HttpSession session = request.getSession(false);
 		if(session == null) {

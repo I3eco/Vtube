@@ -1,6 +1,6 @@
 package com.vtube.model;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,7 +21,7 @@ import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
-@Table(name = "channels")
+@Table(name= "channels")
 @Entity
 public class Channel {
 	@Id
@@ -41,7 +41,7 @@ public class Channel {
 	
 	// One channel can have multiple videos
 	@OneToMany(mappedBy = "owner")
-	private Set<Video> ownedVideos;
+	private List<Video> ownedVideos;
 
 	// Many users can subscribe to many channels
     @ManyToMany(fetch = FetchType.LAZY,
@@ -50,6 +50,6 @@ public class Channel {
                 CascadeType.MERGE
             }, 
             mappedBy = "subscribedChannels")
-	private Set<User> usersSubscribedToChannel;
+	private List<User> usersSubscribedToChannel;
 
 }

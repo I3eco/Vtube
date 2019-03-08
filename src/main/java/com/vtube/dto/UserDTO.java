@@ -21,6 +21,7 @@ public class UserDTO implements Idto{
 	private Long numberOfSubscribers;
 	
 	private String profilePicture;
+	
 	private int numberOfOwnVideos;
 	private int numberOfLikedVideos;
 }

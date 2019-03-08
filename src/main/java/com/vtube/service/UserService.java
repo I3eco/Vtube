@@ -47,8 +47,8 @@ public class UserService {
 		User user = this.modelMapper.map(signUpData, User.class);
 		// TODO must make validation if user exists in database
 
-		this.userRepository.save(user);
-		user = this.userRepository.findUserByEmail(user.getEmail()).get();
+		user = this.userRepository.save(user);
+//		user = this.userRepository.findUserByEmail(user.getEmail()).get();
 
 		UserDTO userDTO = this.convertFromUserToUserDTO(user);
 
@@ -79,7 +79,10 @@ public class UserService {
 		} catch (NoSuchElementException e) {
 			throw new UserNotFoundException("No such user");
 		}
+		
 		UserDTO userDTO = this.modelMapper.map(user, UserDTO.class);
+		userDTO.setNumberOfLikedVideos(user.getLikedVideos().size());
+		userDTO.setNumberOfOwnVideos(user.getOwnedChannel().getOwnedVideos().size());
 		
 		return userDTO;
 	}
