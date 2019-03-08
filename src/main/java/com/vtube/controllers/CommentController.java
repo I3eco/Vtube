@@ -141,9 +141,6 @@ public class CommentController {
 		}
 		
 		Long userId = (Long) session.getAttribute("userId");
-		User author = this.userService.getUserById(userId);
-		Video video = this.videoService.getVideoById(videoId);
-		Comment comment = new Comment(commentDTO.getId(), commentDTO.getContent(), 0, 0, null, author, video);
 		this.commentService.addComment(commentDTO, userId, videoId);
 		SimpleMessageDTO message = new SimpleMessageDTO();
 		message.setMessage("Your comment was added!");
@@ -151,7 +148,41 @@ public class CommentController {
 	}
 	
 	
-	
+	@PostMapping("/comments")
+	@ResponseBody
+	public Idto addSubComment(@RequestParam("commentId") Integer commentId,
+			@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
+		
+		if (!this.commentService.findById(commentId)) {
+			try {
+				throw new NoSuchCommentException("No such comment!");
+			} catch (NoSuchCommentException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("No such comment!");
+				return message;
+			}
+		}
+		
+		HttpSession session = request.getSession();
+		if (session == null) {
+			try {
+				throw new NotLoggedInException("You are not logged in!");
+			} catch (NotLoggedInException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are not logged in!");
+				return message;
+			}
+		}
+		
+		Long userId = (Long) session.getAttribute("userId");
+		this.commentService.addSubComment(commentDTO, userId, commentId);
+		SimpleMessageDTO message = new SimpleMessageDTO();
+		message.setMessage("Your comment was added!");
+		return message;
+		
+	}
 	
 	
 	
