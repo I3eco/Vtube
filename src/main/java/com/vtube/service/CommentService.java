@@ -24,9 +24,9 @@ public class CommentService {
 	@Autowired
 	private VideoService videoService;
 	
-	public List<Comment> findAllByVideoId(Integer videoId) {
-		return commentsRepository.findAllByVideoId(videoId);
-	}
+//	public List<Comment> findAllByVideoId(Integer videoId) {
+//		return commentsRepository.findAllByVideoId(videoId);
+//	}
 //	public boolean findById(Integer commentId) {
 //		try {
 //			Comment comment = this.commentsRepository.findById(commentId).get();
@@ -35,9 +35,9 @@ public class CommentService {
 //		}
 //		return true;
 //	}
-	public List<Comment> findAllByCommentId(Integer commentId) {
-		return commentsRepository.findAllByCommentId(commentId);
-	}
+//	public List<Comment> findAllByCommentId(Integer commentId) {
+//		return commentsRepository.findAllByCommentId(commentId);
+//	}
 	
 	public void addComment(CommentDTO commentDTO, Long userId, Integer videoId) {
 		User author = this.userService.getUserById(userId);
