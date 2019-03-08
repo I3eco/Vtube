@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -185,11 +186,38 @@ public class CommentController {
 	}
 	
 	
+	@PutMapping("/comments")
+	@ResponseBody
+	public Idto addComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
 	
+		if (!this.commentService.findById( (int)((long)commentDTO.getId())) ) {
+			try {
+				throw new NoSuchCommentException("No such comment!");
+			} catch (NoSuchCommentException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("No such comment!");
+				return message;
+			}
+		}
+		
+		HttpSession session = request.getSession();
+		if (session == null) {
+			try {
+				throw new NotLoggedInException("You are not logged in!");
+			} catch (NotLoggedInException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are not logged in!");
+				return message;
+			}
+		}
 	
-	
-	
-	
+		this.commentService.editComment(commentDTO);
+		SimpleMessageDTO message = new SimpleMessageDTO();
+		message.setMessage("Your comment was edited!");
+		return message;
+	}
 	
 	
 	

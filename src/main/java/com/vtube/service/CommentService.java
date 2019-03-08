@@ -54,6 +54,12 @@ public class CommentService {
 		this.commentsRepository.save(comment);
 	}
 	
+	public void editComment(CommentDTO commentDTO) {
+		Comment comment = this.commentsRepository.findById(commentDTO.getId()).get();
+		comment.setContent(commentDTO.getContent());
+		this.commentsRepository.save(comment);
+	}
+	
 
 	
 }
