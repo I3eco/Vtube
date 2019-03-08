@@ -35,6 +35,7 @@ public class UserExistsException extends Exception {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
+	
     @Override
     public synchronized Throwable fillInStackTrace() {
         return this;

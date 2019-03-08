@@ -65,7 +65,7 @@ public class ChannelController {
 				channel = this.channelService.getChannelById(id);
 			} else {
 				HttpSession session = request.getSession(false);
-				channel = this.channelService.getChannelByUserId((Long) session.getAttribute("userId"));
+				channel = this.channelService.getChannelDTOByUserId((Long) session.getAttribute("userId"));
 			}
 
 		}

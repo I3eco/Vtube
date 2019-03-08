@@ -9,7 +9,7 @@ import lombok.Setter;
 
 /**
  * This is representation of video object in list of videos. 
- * Must be returned as a JSON on GET -> /channel/id/videos?type={liked, forLater, history}, (domain)/ requests
+ * Must be returned as a JSON on GET -> /watch?id=(something) request
  * @author I3eco
  *
  */

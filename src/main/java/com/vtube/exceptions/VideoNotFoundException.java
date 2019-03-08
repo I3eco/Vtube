@@ -3,36 +3,36 @@ package com.vtube.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value=HttpStatus.CONFLICT, reason="Email already exists")
-public class EmailExistsException extends Exception{
+@ResponseStatus(value=HttpStatus.NOT_FOUND, reason="Video not found!")
+public class VideoNotFoundException extends Exception {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1583952595143394616L;
+	private static final long serialVersionUID = -7743107098512776034L;
 
-	public EmailExistsException() {
+	public VideoNotFoundException() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public EmailExistsException(String message, Throwable cause, boolean enableSuppression,
+	public VideoNotFoundException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 		// TODO Auto-generated constructor stub
 	}
 
-	public EmailExistsException(String message, Throwable cause) {
+	public VideoNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public EmailExistsException(String message) {
+	public VideoNotFoundException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public EmailExistsException(Throwable cause) {
+	public VideoNotFoundException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
@@ -40,5 +40,6 @@ public class EmailExistsException extends Exception{
     @Override
     public synchronized Throwable fillInStackTrace() {
         return this;
-    }
+    }	
+
 }

@@ -54,7 +54,7 @@ public class ChannelService {
 		return channelDTO;
 	}
 	
-	public ChannelDTO getChannelByUserId(Long id) throws UserDoNotHaveChannelException {
+	public ChannelDTO getChannelDTOByUserId(Long id) throws UserDoNotHaveChannelException {
 		Channel channel = null;
 		User user = this.usersRepository.findById(id).get();
 		channel = user.getOwnedChannel();
@@ -66,5 +66,17 @@ public class ChannelService {
 		ChannelDTO channelDTO = this.modelMapper.map(channel, ChannelDTO.class);
 		
 		return channelDTO;
+	}
+	
+	public Channel getChannelByUserId(Long id) throws UserDoNotHaveChannelException {
+		Channel channel = null;
+		User user = this.usersRepository.findById(id).get();
+		channel = user.getOwnedChannel();
+		
+		if(channel == null) {
+			throw new UserDoNotHaveChannelException("User do not have channel");
+		}
+		
+		return channel;
 	}
 }
