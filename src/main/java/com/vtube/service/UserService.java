@@ -142,4 +142,10 @@ public class UserService {
 	public @NonNull Optional<User> findById(Long id) {
 		return this.userRepository.findById(id);
 	}
+
+	public User getUserById(Long userId) {
+		return this.userRepository.findUserById(userId);
+	}
+	
+	
 }

@@ -60,6 +60,10 @@ public class VideoService {
 		}
 		return true;
 	}
+
+	public Video getVideoById(Integer videoId) {
+		return this.videosRepository.findById(videoId).get();
+	}
 	
 	public void uploadVideoData(MultipartFile file, MultipartFile thumbnail, String title, String description, Long ownerId, Channel channel) throws FileExistsException, VideoNotFoundException, UnsupportedFileFormatException {
 		this.checkFileFormat(file, SUPPORTED_VIDEO_FORMATS, "Video");

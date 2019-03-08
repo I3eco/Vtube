@@ -6,7 +6,7 @@ import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
-public class SimpleMessageDTO {
+public class SimpleMessageDTO implements Idto{
 	@NonNull
 	private String message;
 }

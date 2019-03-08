@@ -7,14 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.vtube.model.Comment;
+import com.vtube.model.Video;
 
 @Repository
 public interface CommentsRepository extends JpaRepository<Comment, Long>{
 
-//	List<Comment> findAllByVideoId(Long videoId);
+	List<Comment> findAllByCommentId(Integer commentId);
 
-//	Optional<Comment> findById(Integer commentId);
+	Video findVideoByCommentId(Integer commentId);
+	
+	List<Comment> findAllByVideoId(Integer videoId);
 
-//	List<Comment> findAllByCommentId(Integer commentId);
 	
 }

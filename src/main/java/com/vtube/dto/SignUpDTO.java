@@ -11,7 +11,7 @@ import lombok.NonNull;
  */
 @Data
 @NoArgsConstructor
-public class SignUpDTO {
+public class SignUpDTO implements Idto{
 
 	@NonNull
 	private String nickName;
