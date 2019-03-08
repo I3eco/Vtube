@@ -21,6 +21,8 @@ import com.vtube.model.Channel;
 import com.vtube.model.User;
 import com.vtube.validations.UserValidation;
 
+import lombok.NonNull;
+
 /**
  * Class to manage database with user related requests.
  * 
@@ -135,5 +137,9 @@ public class UserService {
 
 	public UserValidation getUserValidator() {
 		return this.userValidator;
+	}
+
+	public @NonNull Optional<User> findById(Long id) {
+		return this.userRepository.findById(id);
 	}
 }

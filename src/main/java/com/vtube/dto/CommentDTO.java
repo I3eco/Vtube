@@ -21,6 +21,9 @@ public class CommentDTO {
 	@NonNull
 	private String content;
 	
+	@NonNull
+	private String userNickName;
+	
 	private int likes;
 	private int dislikes;
 	List<CommentDTO> subComments;
