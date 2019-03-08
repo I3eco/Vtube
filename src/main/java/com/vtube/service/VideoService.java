@@ -31,5 +31,9 @@ public class VideoService {
 		}
 		return true;
 	}
+
+	public Video getVideoById(Integer videoId) {
+		return this.videosRepository.findById(videoId).get();
+	}
 	
 }
