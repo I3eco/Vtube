@@ -16,6 +16,7 @@ import com.vtube.dto.LoginDTO;
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
 import com.vtube.dto.VideoDTO;
+import com.vtube.exceptions.BadCredentialsException;
 import com.vtube.exceptions.EmailExistsException;
 import com.vtube.exceptions.InvalidPasswordException;
 import com.vtube.exceptions.UserExistsException;
@@ -46,7 +47,7 @@ public class UserService {
 
 	@Autowired
 	private UserValidation userValidator;
-	
+
 	@Autowired
 	private VideoService videoService;
 
@@ -86,22 +87,22 @@ public class UserService {
 		} catch (NoSuchElementException e) {
 			throw new UserNotFoundException("No such user");
 		}
-		
+
 		UserDTO userDTO = this.modelMapper.map(user, UserDTO.class);
-		userDTO.setNumberOfLikedVideos(user.getLikedVideos().size());
-		userDTO.setNumberOfOwnVideos(user.getOwnedChannel().getOwnedVideos().size());
-		
+		if (user.getLikedVideos() != null) {
+			userDTO.setNumberOfLikedVideos(user.getLikedVideos().size());
+		}
+		if (user.getOwnedChannel() != null && user.getOwnedChannel().getOwnedVideos() != null) {
+			userDTO.setNumberOfOwnVideos(user.getOwnedChannel().getOwnedVideos().size());
+		}
+
 		return userDTO;
 	}
-	
-	public Long login (LoginDTO loginData) throws UserNotFoundException, InvalidPasswordException {
+
+	public Long login(LoginDTO loginData) throws BadCredentialsException {
 		Optional<User> user = this.userRepository.findUserByEmail(loginData.getEmail());
-		if(!user.isPresent()) {
-			throw new UserNotFoundException("No such user!");
-		}
-		
-		if(!this.checkPasswordById(loginData.getPassword(), user.get().getPassword())) {
-			throw new InvalidPasswordException("Password not match");
+		if (!user.isPresent() || !this.checkPasswordById(loginData.getPassword(), user.get().getPassword())) {
+			throw new BadCredentialsException("Wrong username or password");
 		}
 		
 		return user.get().getId();
@@ -159,25 +160,26 @@ public class UserService {
 
 	public List<VideoDTO> getUserWatchedVideos(Long userId) {
 		User user = this.userRepository.findById(userId).get();
-		
+
 		List<Video> watchedVideos = user.getWatchedVideos();
 		List<VideoDTO> watchedVideosDTO = new LinkedList<VideoDTO>();
-		
-		watchedVideos.stream().forEach(video -> watchedVideosDTO.add(this.videoService.convertFromVideoToVideoDTO(video)));
-		
+
+		watchedVideos.stream()
+				.forEach(video -> watchedVideosDTO.add(this.videoService.convertFromVideoToVideoDTO(video)));
+
 		return watchedVideosDTO;
 	}
 
 	public List<VideoDTO> getUserVideosForLater(Long userId) {
 		User user = this.userRepository.findById(userId).get();
-		
+
 		List<Video> videosForLater = user.getVideosForLater();
 		List<VideoDTO> videosForLaterDTO = new LinkedList<VideoDTO>();
-		
-		videosForLater.stream().forEach(video -> videosForLaterDTO.add(this.videoService.convertFromVideoToVideoDTO(video)));
-		
+
+		videosForLater.stream()
+				.forEach(video -> videosForLaterDTO.add(this.videoService.convertFromVideoToVideoDTO(video)));
+
 		return videosForLaterDTO;
 	}
-	
-	
+
 }
