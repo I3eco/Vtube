@@ -253,4 +253,47 @@ public class CommentController {
 		message.setMessage("Your comment was deleted!");
 		return message;
 	}
+	
+	
+//	@PutMapping("/comments")
+//	@ResponseBody
+//	public Idto likeComment(@RequestParam("commentId") Integer commentId, HttpServletRequest request) {
+//		
+//		if (!this.commentService.findById(commentId)) {
+//			try {
+//				throw new NoSuchCommentException("No such comment!");
+//			} catch (NoSuchCommentException e) {
+//				e.printStackTrace();
+//				SimpleMessageDTO message = new SimpleMessageDTO();
+//				message.setMessage("No such comment!");
+//				return message;
+//			}
+//		}
+//		
+//		HttpSession session = request.getSession();
+//		if (session == null) {
+//			try {
+//				throw new NotLoggedInException("You are not logged in!");
+//			} catch (NotLoggedInException e) {
+//				e.printStackTrace();
+//				SimpleMessageDTO message = new SimpleMessageDTO();
+//				message.setMessage("You are not logged in!");
+//				return message;
+//			}
+//		}
+//		
+//		this.commentService.likeComment(commentId);
+//		SimpleMessageDTO message = new SimpleMessageDTO();
+//		message.setMessage("Your liked the comment!");
+//		return message;	
+//	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

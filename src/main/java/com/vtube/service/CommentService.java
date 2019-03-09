@@ -62,6 +62,7 @@ public class CommentService {
 	
 	public void editComment(CommentDTO commentDTO) {
 		Comment comment = this.commentsRepository.findById(commentDTO.getId()).get();
+		this.commentsRepository.deleteById(comment.getId());
 		comment.setContent(commentDTO.getContent());
 		this.commentsRepository.save(comment);
 	}
@@ -69,6 +70,13 @@ public class CommentService {
 	public void deleteComment(Integer commentId) {
 		this.commentsRepository.deleteById( (long)((int)commentId) );
 		
+	}
+
+	public void likeComment(Integer commentId) {
+		Comment comment = this.commentsRepository.findById(commentId).get();
+		this.commentsRepository.deleteById(comment.getId());
+		comment.setLikes(comment.getLikes() + 1);
+		this.commentsRepository.save(comment);
 	}
 	
 
