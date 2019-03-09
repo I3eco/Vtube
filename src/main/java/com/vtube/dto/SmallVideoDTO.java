@@ -25,6 +25,6 @@ public class SmallVideoDTO implements Idto{
 	private int numberOfViews;
 	
 	@NonNull
-	private String thumbnailUrl;
+	private String thumbnail;
 	
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class VideoDTO extends SmallVideoDTO {
 
 	@NonNull
@@ -23,7 +25,6 @@ public class VideoDTO extends SmallVideoDTO {
 
 	private String description;
 
-	@NonNull
 	private LocalDate dateOfCreation;
 	
 	public VideoDTO(@NonNull Long id, @NonNull String channelName, int numberOfViews, @NonNull String thumbnailUrl, 

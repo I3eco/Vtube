@@ -1,5 +1,7 @@
 package com.vtube.service;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -13,12 +15,14 @@ import com.vtube.dal.UsersRepository;
 import com.vtube.dto.LoginDTO;
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
+import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.EmailExistsException;
 import com.vtube.exceptions.InvalidPasswordException;
 import com.vtube.exceptions.UserExistsException;
 import com.vtube.exceptions.UserNotFoundException;
 import com.vtube.model.Channel;
 import com.vtube.model.User;
+import com.vtube.model.Video;
 import com.vtube.validations.UserValidation;
 
 import lombok.NonNull;
@@ -42,6 +46,9 @@ public class UserService {
 
 	@Autowired
 	private UserValidation userValidator;
+	
+	@Autowired
+	private VideoService videoService;
 
 	public UserDTO createUser(SignUpDTO signUpData) {
 		User user = this.modelMapper.map(signUpData, User.class);
@@ -148,6 +155,28 @@ public class UserService {
 
 	public User getUserById(Long userId) {
 		return this.userRepository.findUserById(userId);
+	}
+
+	public List<VideoDTO> getUserWatchedVideos(Long userId) {
+		User user = this.userRepository.findById(userId).get();
+		
+		List<Video> watchedVideos = user.getWatchedVideos();
+		List<VideoDTO> watchedVideosDTO = new LinkedList<VideoDTO>();
+		
+		watchedVideos.stream().forEach(video -> watchedVideosDTO.add(this.videoService.convertFromVideoToVideoDTO(video)));
+		
+		return watchedVideosDTO;
+	}
+
+	public List<VideoDTO> getUserVideosForLater(Long userId) {
+		User user = this.userRepository.findById(userId).get();
+		
+		List<Video> videosForLater = user.getVideosForLater();
+		List<VideoDTO> videosForLaterDTO = new LinkedList<VideoDTO>();
+		
+		videosForLater.stream().forEach(video -> videosForLaterDTO.add(this.videoService.convertFromVideoToVideoDTO(video)));
+		
+		return videosForLaterDTO;
 	}
 	
 	

@@ -72,14 +72,16 @@ public class Video {
             mappedBy = "likedVideos")
     private List<User> usersWhoLikeThisVideo;
     
-    //History of watched videos for each user
-    @ManyToMany(fetch = FetchType.LAZY,
-    cascade = {
-        CascadeType.PERSIST,
-        CascadeType.MERGE
-    }, 
-    mappedBy = "watchedVideos")
-    private List<User> usersWatchedThisVideo;
+//    //History of watched videos for each user
+//    @ManyToMany(fetch = FetchType.LAZY,
+//    cascade = {
+//        CascadeType.PERSIST,
+//        CascadeType.MERGE
+//    }, 
+//    mappedBy = "watchedVideos")
+//    private List<User> usersWatchedThisVideo;
+
+	private int numberOfViews = 0;
     
     //Users can have videos for watching later
     @ManyToMany(fetch = FetchType.LAZY,

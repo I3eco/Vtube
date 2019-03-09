@@ -3,12 +3,14 @@ package com.vtube.controllers;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vtube.dto.BigVideoDTO;
 import com.vtube.dto.CreatedVideoDTO;
 import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
@@ -49,6 +51,22 @@ public class VideoController {
 		}
 		
 		CreatedVideoDTO video = this.videoService.uploadVideoData(file, thumbnail, title, description, userId, channel);
+		
+		return video;
+	}
+	
+	@GetMapping("/watch")
+	@ResponseBody
+	public BigVideoDTO watchVideoByID(@RequestParam("id") Long id, HttpServletRequest request) throws VideoNotFoundException {
+		Long userId = null;
+		try {
+			userId = this.session.getUserId(request);
+		} catch (UserNotFoundException e) {
+			BigVideoDTO video = this.videoService.getBigVideoDTOById(id);
+			return video;
+		}
+		
+		BigVideoDTO video = this.videoService.getBigVideoDTOById(id, userId);
 		
 		return video;
 	}
