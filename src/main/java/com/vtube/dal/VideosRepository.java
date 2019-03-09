@@ -1,5 +1,6 @@
 package com.vtube.dal;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,7 @@ public interface VideosRepository extends JpaRepository<Video, Long>{
 	Optional<Video> findById(Integer videoId);
 	
 	
+
+	List<Video> findByTitleIgnoreCaseContaining(String search);
+
 }

@@ -251,6 +251,10 @@ public class VideoService {
 		
 		return comments;
 	}
+
+	public List<Video> findAllBySearchString(String search) {
+		return this.videosRepository.findByTitleIgnoreCaseContaining(search);
+	}
 	
 
 }

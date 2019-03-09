@@ -1,7 +1,11 @@
 package com.vtube.controllers;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,12 +16,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vtube.dto.BigVideoDTO;
 import com.vtube.dto.CreatedVideoDTO;
+import com.vtube.dto.Idto;
+import com.vtube.dto.SimpleMessageDTO;
+import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.NotLoggedInException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
 import com.vtube.exceptions.UserDoNotHaveChannelException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Channel;
+import com.vtube.model.Video;
 import com.vtube.service.ChannelService;
 import com.vtube.service.SessionService;
 import com.vtube.service.VideoService;
@@ -33,6 +41,9 @@ public class VideoController {
 	
 	@Autowired
 	SessionService session;
+	
+	@Autowired
+	private ModelMapper mapper;
 	
 	@PostMapping("/videos")
 	@ResponseBody
@@ -72,27 +83,27 @@ public class VideoController {
 	}
 	
 	
-//	@GetMapping("/videos")
-//	@ResponseBody
-//	public List<Idto> searchVideos(@RequestParam("search") String search) {
-//		
-//		List<Video> videos = this.videoService.findAllBySearchString(search);
-//		if (videos == null || videos.isEmpty()) {
-//			SimpleMessageDTO message = new SimpleMessageDTO();
-//			message.setMessage("No videos match your search!");
-//			List<Idto> messages = new LinkedList<Idto>();
-//			messages.add(message);
-//			return messages;
-//		}
-//		List<Idto> videoDTOs = new LinkedList<Idto>();
-//		
-//		for (Video video : videos) {
-//			VideoDTO videoDTO = new VideoDTO();
-//			this.mapper.map(video, videoDTO);
-//			videoDTOs.add(videoDTO);
-//		}
-//		return videoDTOs;
-//	}
+	@GetMapping("/videos/search")
+	@ResponseBody
+	public List<Idto> searchVideos(@RequestParam("search") String search) {
+		
+		List<Video> videos = this.videoService.findAllBySearchString(search);
+		if (videos == null || videos.isEmpty()) {
+			SimpleMessageDTO message = new SimpleMessageDTO();
+			message.setMessage("No videos match your search!");
+			List<Idto> messages = new LinkedList<Idto>();
+			messages.add(message);
+			return messages;
+		}
+		List<Idto> videoDTOs = new LinkedList<Idto>();
+		
+		for (Video video : videos) {
+			VideoDTO videoDTO = new VideoDTO();
+			this.mapper.map(video, videoDTO);
+			videoDTOs.add(videoDTO);
+		}
+		return videoDTOs;
+	}
 	
 	
 	
