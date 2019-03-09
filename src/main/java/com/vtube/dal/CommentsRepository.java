@@ -12,11 +12,10 @@ import com.vtube.model.Video;
 @Repository
 public interface CommentsRepository extends JpaRepository<Comment, Long>{
 
-//	List<Comment> findAllByCommentId(Integer commentId);
-//
-//	Video findVideoByCommentId(Integer commentId);
-//	
-//	List<Comment> findAllByVideoId(Integer videoId);
+	Optional<Comment> findById(Integer commentId);
+
+	List<Comment> findAllBySuperCommentId(Integer commentId);
+
 
 	
 }
