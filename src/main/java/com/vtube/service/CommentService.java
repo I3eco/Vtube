@@ -78,6 +78,13 @@ public class CommentService {
 		comment.setLikes(comment.getLikes() + 1);
 		this.commentsRepository.save(comment);
 	}
+
+	public void dislikeComment(Integer commentId) {
+		Comment comment = this.commentsRepository.findById(commentId).get();
+		this.commentsRepository.deleteById(comment.getId());
+		comment.setDislikes(comment.getDislikes() + 1);
+		this.commentsRepository.save(comment);
+	}
 	
 
 	
