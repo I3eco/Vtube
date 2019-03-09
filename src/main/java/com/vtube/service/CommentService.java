@@ -65,6 +65,11 @@ public class CommentService {
 		comment.setContent(commentDTO.getContent());
 		this.commentsRepository.save(comment);
 	}
+
+	public void deleteComment(Integer commentId) {
+		this.commentsRepository.deleteById( (long)((int)commentId) );
+		
+	}
 	
 
 	

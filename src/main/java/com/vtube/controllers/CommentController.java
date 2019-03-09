@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -220,5 +221,36 @@ public class CommentController {
 	}
 	
 	
-	
+	@DeleteMapping("/comments")
+	@ResponseBody
+	public Idto deleteComment(@RequestParam("commentId") Integer commentId, HttpServletRequest request) {
+		
+		if (!this.commentService.findById(commentId)) {
+			try {
+				throw new NoSuchCommentException("No such comment!");
+			} catch (NoSuchCommentException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("No such comment!");
+				return message;
+			}
+		}
+		
+		HttpSession session = request.getSession();
+		if (session == null) {
+			try {
+				throw new NotLoggedInException("You are not logged in!");
+			} catch (NotLoggedInException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are not logged in!");
+				return message;
+			}
+		}
+		
+		this.commentService.deleteComment(commentId);
+		SimpleMessageDTO message = new SimpleMessageDTO();
+		message.setMessage("Your comment was deleted!");
+		return message;
+	}
 }
