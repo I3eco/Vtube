@@ -289,42 +289,38 @@ public class CommentController {
 //	}
 	
 	
-	@PutMapping("/comments")
-	@ResponseBody
-	public Idto dislikeComment(@RequestParam("commentId") Integer commentId, HttpServletRequest request) {
-		
-		if (!this.commentService.findById(commentId)) {
-			try {
-				throw new NoSuchCommentException("No such comment!");
-			} catch (NoSuchCommentException e) {
-				e.printStackTrace();
-				SimpleMessageDTO message = new SimpleMessageDTO();
-				message.setMessage("No such comment!");
-				return message;
-			}
-		}
-		
-		HttpSession session = request.getSession();
-		if (session == null) {
-			try {
-				throw new NotLoggedInException("You are not logged in!");
-			} catch (NotLoggedInException e) {
-				e.printStackTrace();
-				SimpleMessageDTO message = new SimpleMessageDTO();
-				message.setMessage("You are not logged in!");
-				return message;
-			}
-		}
-		
-		this.commentService.dislikeComment(commentId);
-		SimpleMessageDTO message = new SimpleMessageDTO();
-		message.setMessage("Your disliked the comment!");
-		return message;	
-	}
-	
-	
-	
-	
+//	@PutMapping("/comments")
+//	@ResponseBody
+//	public Idto dislikeComment(@RequestParam("commentId") Integer commentId, HttpServletRequest request) {
+//		
+//		if (!this.commentService.findById(commentId)) {
+//			try {
+//				throw new NoSuchCommentException("No such comment!");
+//			} catch (NoSuchCommentException e) {
+//				e.printStackTrace();
+//				SimpleMessageDTO message = new SimpleMessageDTO();
+//				message.setMessage("No such comment!");
+//				return message;
+//			}
+//		}
+//		
+//		HttpSession session = request.getSession();
+//		if (session == null) {
+//			try {
+//				throw new NotLoggedInException("You are not logged in!");
+//			} catch (NotLoggedInException e) {
+//				e.printStackTrace();
+//				SimpleMessageDTO message = new SimpleMessageDTO();
+//				message.setMessage("You are not logged in!");
+//				return message;
+//			}
+//		}
+//		
+//		this.commentService.dislikeComment(commentId);
+//		SimpleMessageDTO message = new SimpleMessageDTO();
+//		message.setMessage("Your disliked the comment!");
+//		return message;	
+//	}
 	
 	
 }
