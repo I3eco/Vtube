@@ -8,10 +8,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-//import java.util.Map;
 import java.util.NoSuchElementException;
-
-//import javax.transaction.Transactional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -21,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vtube.dal.CommentsRepository;
 import com.vtube.dal.UsersRepository;
-//import com.cloudinary.Cloudinary;
-//import com.cloudinary.utils.ObjectUtils;
 import com.vtube.dal.VideosRepository;
 import com.vtube.dto.BigVideoDTO;
 import com.vtube.dto.CommentDTO;
@@ -34,7 +29,6 @@ import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Channel;
-import com.vtube.model.Comment;
 import com.vtube.model.User;
 import com.vtube.model.Video;
 
@@ -51,9 +45,6 @@ public class VideoService {
 	private static final String SUPPORTED_VIDEO_FORMATS = "mp4 avi wmv";
 	private static final String SUPPORTED_THUMBNAIL_FORMATS = "jpeg jpg png gif";
 	private static final String UPLOAD_DIR = "..\\VTubeFileStorage\\";
-
-//	private static final Cloudinary cloudinary = new Cloudinary
-//			("CLOUDINARY_URL=cloudinary://689344796343136:jpv4nWOWuPXqg-fYL0NFfxpAxVE@vtubeto");
 
 	@Autowired
 	private VideosRepository videosRepository;
@@ -154,16 +145,6 @@ public class VideoService {
 		return path.toString();
 	}
 
-	// TODO test this
-//	@Transactional
-//	private String saveFileToCloud(MultipartFile file, String fileDir, Long ownerId) throws IOException {
-//		File tempFile = new File(file.getOriginalFilename());
-//		@SuppressWarnings("rawtypes")
-//		Map response = cloudinary.uploader().upload(tempFile, ObjectUtils.asMap("public_id", tempFile.getName()));
-//		String url = (String) response.get("url");
-//		return url;
-//	}
-//	
 	private void checkFileFormat(MultipartFile file, String formats, String inputType)
 			throws UnsupportedFileFormatException {
 		String type = file.getContentType().toLowerCase();
@@ -232,7 +213,10 @@ public class VideoService {
 		
 		video.setChannelName(parent.getOwner().getName());
 		video.setChannelId(parent.getOwner().getId());
-		video.setLikes(parent.getUsersWhoLikeThisVideo().size());
+		if(parent.getUsersWhoLikeThisVideo() != null)
+			video.setLikes(parent.getUsersWhoLikeThisVideo().size());
+		if(parent.getUsersWhoDisLikeThisVideo() != null)
+			video.setDislikes(parent.getUsersWhoDisLikeThisVideo().size());
 		video.setComments(this.convertFromCommentsToCommentsDTO(parent));
 		
 		return video;
@@ -267,12 +251,6 @@ public class VideoService {
 		
 		return comments;
 	}
-
-//	public List<Video> findAllBySearchString(String search) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
 	
 
 }

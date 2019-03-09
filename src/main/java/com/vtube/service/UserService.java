@@ -18,8 +18,9 @@ import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
 import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.BadCredentialsException;
+import com.vtube.exceptions.ChannelNotFoundException;
 import com.vtube.exceptions.EmailExistsException;
-import com.vtube.exceptions.NoSuchVideoException;
+import com.vtube.exceptions.ConflictException;
 import com.vtube.exceptions.UserExistsException;
 import com.vtube.exceptions.UserNotFoundException;
 import com.vtube.exceptions.VideoNotFoundException;
@@ -187,6 +188,10 @@ public class UserService {
 			return;
 		}
 		
+		//if user've already dislike this video
+		if(video.getUsersWhoDisLikeThisVideo().contains(user)) {
+			video.getUsersWhoDisLikeThisVideo().remove(user);
+		}
 		video.getUsersWhoLikeThisVideo().add(user);
 		this.videosRepository.save(video);
 		
@@ -216,5 +221,81 @@ public class UserService {
 		user.getLikedVideos().remove(video);
 		this.userRepository.save(user);
 		
+	}
+
+	public void dislikeVideo(Long videoId, Long userId) throws VideoNotFoundException {
+		Video video = null;
+		
+		try {
+			video = this.videosRepository.findById(videoId).get();
+		} catch (NoSuchElementException e) {
+			throw new VideoNotFoundException();
+		}
+		
+		User user = this.userRepository.findById(userId).get();
+		
+		//if user've already disliked this video
+		if(video.getUsersWhoDisLikeThisVideo().contains(user)) {
+			return;
+		}
+		
+		//if user've already liked this video
+		if(video.getUsersWhoLikeThisVideo().contains(user)) {
+			video.getUsersWhoLikeThisVideo().remove(user);
+			user.getLikedVideos().remove(video);
+		}
+		
+		video.getUsersWhoDisLikeThisVideo().add(user);
+		this.videosRepository.save(video);
+	}
+	
+	public void removeVideoDislike(Long videoId, Long userId) throws VideoNotFoundException {
+		Video video = null;
+		
+		try {
+			video = this.videosRepository.findById(videoId).get();
+		} catch (NoSuchElementException e) {
+			throw new VideoNotFoundException();
+		}
+		
+		User user = this.userRepository.findById(userId).get();
+		
+		if(!video.getUsersWhoDisLikeThisVideo().contains(user)) {
+			return;
+		}
+		
+		video.getUsersWhoDisLikeThisVideo().remove(user);
+		this.videosRepository.save(video);
+	}
+
+	public void subscribeToChannel(Long userId, Long channelId) throws ChannelNotFoundException, ConflictException {
+		Channel channel = null;
+		try {
+			channel = this.channelRepository.findById(channelId).get();
+		} catch (NoSuchElementException e){
+			throw new ChannelNotFoundException();
+		}
+		
+		if(channel.getOwner().getId().equals(userId)) {
+			throw new ConflictException("Cannot subscribe to your own channel!");
+		}
+		
+		User user = this.userRepository.findById(userId).get();
+		
+/*
+ * 		In like/dislike video logic, I made one method for like on post request, and other for dislike on delete request.
+		Since I wonder if it isn't better just to make one method with simple post request,
+		I will implement the logic here.
+ */
+		if(user.getSubscribedChannels().contains(channel)) {
+			user.getSubscribedChannels().remove(channel);
+			channel.getUsersSubscribedToChannel().remove(user);
+		} else {
+			user.getSubscribedChannels().add(channel);
+			channel.getUsersSubscribedToChannel().add(user);
+		}
+		
+		this.userRepository.save(user);
+		this.channelRepository.save(channel);
 	}
 }

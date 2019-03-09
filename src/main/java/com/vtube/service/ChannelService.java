@@ -86,12 +86,11 @@ public class ChannelService {
 	
 	public ChannelDTO convertFromChannelToChannelDTO(Channel parent){
 		ChannelDTO channel = this.modelMapper.map(parent, ChannelDTO.class);
-		
+		if(parent.getUsersSubscribedToChannel() != null)
+			channel.setNumberOfSubscribers(parent.getUsersSubscribedToChannel().size());
 		List<Video> parentVideos = parent.getOwnedVideos();
-//		Type listType = new TypeToken<List<SmallVideoDTO>>(){}.getType();
-//		List<SmallVideoDTO> videos = this.modelMapper.map(parentVideos, listType);
 		
-		List<SmallVideoDTO> videos =new LinkedList<SmallVideoDTO>();
+		List<SmallVideoDTO> videos = new LinkedList<SmallVideoDTO>();
 		
 		parentVideos.stream().forEach(video -> {
 			SmallVideoDTO tempVid = this.modelMapper.map(video, SmallVideoDTO.class);
@@ -101,9 +100,9 @@ public class ChannelService {
 		
 		channel.setOwnedVideos(videos);
 		
-//		for (int videoPosition = 0; videoPosition < videos.size(); videoPosition++) {
-//			videos.get(videoPosition).setNumberOfViews(parentVideos.get(videoPosition).getUsersWatchedThisVideo().size());
-//		}
+		for (int videoPosition = 0; videoPosition < videos.size(); videoPosition++) {
+			videos.get(videoPosition).setNumberOfViews(parentVideos.get(videoPosition).getNumberOfViews());
+		}
 		
 		return channel;
 	}

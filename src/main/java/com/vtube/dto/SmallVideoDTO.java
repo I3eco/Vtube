@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 /**
  * This is representation of video object in list of videos for the watch video page view. 
- * Must be returned as a part of a JSON on GET -> /video/id request
+ * Must be returned as a part of a JSON on GET -> /watch?id request
  * @author I3eco
  *
  */

@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -49,8 +50,20 @@ public class Video {
 	@NonNull
 	private LocalDate dateOfCreation;
 	
-	@Column(name = "dislikes", nullable = false)
-	private int dislikes = 0;
+//	@Column(name = "dislikes", nullable = false)
+//	private int dislikes = 0;
+    
+    //History of users who not like this video
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                CascadeType.PERSIST,
+                CascadeType.MERGE
+            })
+    @JoinTable(
+    		name= "dislikes_of_videos",
+    		joinColumns= @JoinColumn(name= "video_id"),
+    		inverseJoinColumns= @JoinColumn(name= "user_id"))
+    private List<User> usersWhoDisLikeThisVideo;
 	
 	//one video can have many comments
 	@OneToMany(mappedBy = "commentedVideo")
@@ -71,15 +84,6 @@ public class Video {
             }, 
             mappedBy = "likedVideos")
     private List<User> usersWhoLikeThisVideo;
-    
-//    //History of watched videos for each user
-//    @ManyToMany(fetch = FetchType.LAZY,
-//    cascade = {
-//        CascadeType.PERSIST,
-//        CascadeType.MERGE
-//    }, 
-//    mappedBy = "watchedVideos")
-//    private List<User> usersWatchedThisVideo;
 
 	private int numberOfViews = 0;
     

@@ -9,8 +9,8 @@ import lombok.NonNull;
 import lombok.Setter;
 
 /**
- * This is representation of video object in list of videos. 
- * Must be returned as a JSON on GET -> /watch?id=(something) request
+ * This is representation of video object. 
+ * Must be returned as list of videos  on GET -> //results?search= request
  * @author I3eco
  *
  */

@@ -30,8 +30,8 @@ public class UsersRepositoryTests {
 		
 		user = this.usersRepository.save(user);
 		
-		User user2 = this.usersRepository.findUserById(user.getId());
+		User user2 = this.usersRepository.findById(user.getId()).get();
 		
-		assertEquals(user.getId(), user2.getId());
+		assertEquals(user.getEmail(), user2.getEmail());
 	}
 }

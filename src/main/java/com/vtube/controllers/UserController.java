@@ -23,12 +23,14 @@ import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.dto.UserDTO;
 import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.BadCredentialsException;
+import com.vtube.exceptions.ChannelNotFoundException;
+import com.vtube.exceptions.ConflictException;
 import com.vtube.exceptions.EmailExistsException;
 import com.vtube.exceptions.InvalidAgeException;
 import com.vtube.exceptions.InvalidEmailException;
 import com.vtube.exceptions.InvalidNameException;
 import com.vtube.exceptions.InvalidPasswordException;
-import com.vtube.exceptions.NoSuchVideoException;
+import com.vtube.exceptions.NotLoggedInException;
 import com.vtube.exceptions.UserExistsException;
 import com.vtube.exceptions.UserNotFoundException;
 import com.vtube.exceptions.VideoNotFoundException;
@@ -52,7 +54,7 @@ public class UserController {
 			if(this.session.getUserId(request) != null) {
 				throw new BadCredentialsException("Already logged in!");
 			}
-		} catch (UserNotFoundException e) {
+		} catch (NotLoggedInException e) {
 
 		}
 		UserValidation userValidator = userService.getUserValidator();
@@ -120,13 +122,13 @@ public class UserController {
 	@ResponseBody
 	public List<VideoDTO> getUserVideos(@RequestParam(name= "watched", required = false) boolean watched, @RequestParam(name= "liked", required = false) boolean liked, 
 			@RequestParam(name= "forLater", required = false) boolean forLater,
-			HttpServletRequest request) throws UserNotFoundException{
+			HttpServletRequest request) throws NotLoggedInException{
 		Long userId = null;
 		try {
 			userId = this.session.getUserId(request);
-		} catch (UserNotFoundException e) {
+		} catch (NotLoggedInException e) {
 			if(liked != true) {
-				throw new UserNotFoundException("You must log in to see that!");
+				throw new NotLoggedInException("You must log in to see that!");
 			}
 		}
 		
@@ -144,22 +146,46 @@ public class UserController {
 	}
 	
 	@PostMapping("/like")
-	public void likeVideo (@RequestParam(name= "videoId", required = false) Long id, HttpServletRequest request) throws UserNotFoundException, VideoNotFoundException {
+	public void likeVideo (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
 		Long userId = this.session.getUserId(request);
-		if(id == null) {
+		if(videoId == null) {
 			throw new VideoNotFoundException("");
 		}
-		this.userService.likeVideo(id, userId);
+		this.userService.likeVideo(videoId, userId);
 	}
 	
 	@DeleteMapping("/like")
-	public void removeVideoLike (@RequestParam(name= "videoId", required = false) Long id, HttpServletRequest request) throws UserNotFoundException, VideoNotFoundException {
+	public void removeVideoLike (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
 		Long userId = this.session.getUserId(request);
-		if(id == null) {
+		if(videoId == null) {
 			throw new VideoNotFoundException("");
 		}
 		
-		this.userService.removeVideoLike(id, userId);
+		this.userService.removeVideoLike(videoId, userId);
 	}
 	
+	@PostMapping("/dislike")
+	public void dislikeVideo (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+		Long userId = this.session.getUserId(request);
+		if(videoId == null) {
+			throw new VideoNotFoundException("");
+		}
+		this.userService.dislikeVideo(videoId, userId);
+	}
+	
+	@DeleteMapping("/dislike")
+	public void removeVideoDislike (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+		Long userId = this.session.getUserId(request);
+		if(videoId == null) {
+			throw new VideoNotFoundException("");
+		}
+		this.userService.removeVideoDislike(videoId, userId);
+	}
+
+	@PostMapping("/subscribe")
+	public void subscribeToChannel(@RequestParam("channelId") Long channelId, HttpServletRequest request) throws NotLoggedInException, ChannelNotFoundException, ConflictException {
+		Long userId = this.session.getUserId(request);
+		
+		this.userService.subscribeToChannel(userId, channelId);		
+	}
 }

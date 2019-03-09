@@ -6,12 +6,13 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.vtube.exceptions.UserNotFoundException;
+import com.vtube.exceptions.NotLoggedInException;
 
 import lombok.Data;
 
 /**
  * This is a class to manage session related requests
+ * 
  * @author I3eco
  *
  */
@@ -29,10 +30,10 @@ public class SessionService {
 		this.session.setAttribute(USER_ID, id);
 	}
 	
-	public Long getUserId(HttpServletRequest request) throws UserNotFoundException{
+	public Long getUserId(HttpServletRequest request) throws NotLoggedInException{
 		this.session = request.getSession(false);
 		if(this.session == null) {
-			throw new UserNotFoundException("Not logged in");
+			throw new NotLoggedInException();
 		}
 		
 		return (Long) session.getAttribute(USER_ID);

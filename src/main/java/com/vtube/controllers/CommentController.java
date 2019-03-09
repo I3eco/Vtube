@@ -24,8 +24,6 @@ import com.vtube.exceptions.NoSuchCommentException;
 import com.vtube.exceptions.NoSuchVideoException;
 import com.vtube.exceptions.NotLoggedInException;
 import com.vtube.model.Comment;
-import com.vtube.model.User;
-import com.vtube.model.Video;
 import com.vtube.service.CommentService;
 import com.vtube.service.UserService;
 import com.vtube.service.VideoService;

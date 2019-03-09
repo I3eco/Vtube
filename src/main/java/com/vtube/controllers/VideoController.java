@@ -13,9 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.vtube.dto.BigVideoDTO;
 import com.vtube.dto.CreatedVideoDTO;
 import com.vtube.exceptions.FileExistsException;
+import com.vtube.exceptions.NotLoggedInException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
 import com.vtube.exceptions.UserDoNotHaveChannelException;
-import com.vtube.exceptions.UserNotFoundException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Channel;
 import com.vtube.service.ChannelService;
@@ -40,7 +40,7 @@ public class VideoController {
 			@RequestParam("file") MultipartFile file, @RequestParam("thumbnail") MultipartFile thumbnail, 
 			@RequestParam(name= "title", required = false) String title, @RequestParam(name="description", required = false) String description, 
 			HttpServletRequest request
-			) throws UserNotFoundException, UserDoNotHaveChannelException, VideoNotFoundException, FileExistsException, UnsupportedFileFormatException {
+			) throws NotLoggedInException, UserDoNotHaveChannelException, VideoNotFoundException, FileExistsException, UnsupportedFileFormatException {
 		Long userId = this.session.getUserId(request);
 		
 		Channel channel = null;
@@ -57,11 +57,11 @@ public class VideoController {
 	
 	@GetMapping("/watch")
 	@ResponseBody
-	public BigVideoDTO watchVideoByID(@RequestParam("id") Long id, HttpServletRequest request) throws VideoNotFoundException {
+	public BigVideoDTO watchVideoByID(@RequestParam("videoId") Long id, HttpServletRequest request) throws VideoNotFoundException {
 		Long userId = null;
 		try {
 			userId = this.session.getUserId(request);
-		} catch (UserNotFoundException e) {
+		} catch (NotLoggedInException e) {
 			BigVideoDTO video = this.videoService.getBigVideoDTOById(id);
 			return video;
 		}
