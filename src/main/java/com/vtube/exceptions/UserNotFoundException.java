@@ -3,7 +3,7 @@ package com.vtube.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No such user")
+@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Have to log in!")
 public class UserNotFoundException extends Exception {
 
 	/**

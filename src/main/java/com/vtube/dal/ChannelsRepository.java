@@ -9,7 +9,7 @@ import com.vtube.model.Channel;
 import com.vtube.model.User;
 
 @Repository
-public interface ChannnelsRepository extends JpaRepository<Channel, Long>{
+public interface ChannelsRepository extends JpaRepository<Channel, Long>{
 	
 	Optional<Channel> findChannelByOwner(User owner);
 }

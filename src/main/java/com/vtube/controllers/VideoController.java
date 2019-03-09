@@ -1,11 +1,7 @@
 package com.vtube.controllers;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,19 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vtube.dto.BigVideoDTO;
-import com.vtube.dto.CommentDTO;
 import com.vtube.dto.CreatedVideoDTO;
-import com.vtube.dto.Idto;
-import com.vtube.dto.SimpleMessageDTO;
-import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
 import com.vtube.exceptions.UserDoNotHaveChannelException;
 import com.vtube.exceptions.UserNotFoundException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Channel;
-import com.vtube.model.Comment;
-import com.vtube.model.Video;
 import com.vtube.service.ChannelService;
 import com.vtube.service.SessionService;
 import com.vtube.service.VideoService;
@@ -43,9 +33,6 @@ public class VideoController {
 	
 	@Autowired
 	SessionService session;
-	
-	@Autowired
-	private ModelMapper mapper;
 	
 	@PostMapping("/videos")
 	@ResponseBody

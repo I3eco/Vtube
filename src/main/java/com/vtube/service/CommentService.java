@@ -32,8 +32,9 @@ public class CommentService {
 		return comments;
 	}
 	
-	public boolean findById(Integer commentId) {
+	public boolean findById(Long commentId) {
 		try {
+			@SuppressWarnings("unused")
 			Comment comment = this.commentsRepository.findById(commentId).get();
 		} catch (NoSuchElementException e) {
 			return false;
@@ -41,7 +42,7 @@ public class CommentService {
 		return true;
 	}
 	
-	public List<Comment> findAllByCommentId(Integer commentId) {
+	public List<Comment> findAllByCommentId(Long commentId) {
 		return commentsRepository.findAllBySuperCommentId(commentId);
 	}
 	
@@ -52,7 +53,7 @@ public class CommentService {
 		this.commentsRepository.save(comment);
 	}
 	
-	public void addSubComment(CommentDTO commentDTO, Long userId, Integer commentId) {
+	public void addSubComment(CommentDTO commentDTO, Long userId, Long commentId) {
 		User author = this.userService.getUserById(userId);
 		Comment superComment = this.commentsRepository.findById(commentId).get();
 		Video video = superComment.getCommentedVideo();
@@ -67,19 +68,19 @@ public class CommentService {
 		this.commentsRepository.save(comment);
 	}
 
-	public void deleteComment(Integer commentId) {
-		this.commentsRepository.deleteById( (long)((int)commentId) );
+	public void deleteComment(Long commentId) {
+		this.commentsRepository.deleteById(commentId);
 		
 	}
 
-	public void likeComment(Integer commentId) {
+	public void likeComment(Long commentId) {
 		Comment comment = this.commentsRepository.findById(commentId).get();
 		this.commentsRepository.deleteById(comment.getId());
 		comment.setLikes(comment.getLikes() + 1);
 		this.commentsRepository.save(comment);
 	}
 
-	public void dislikeComment(Integer commentId) {
+	public void dislikeComment(Long commentId) {
 		Comment comment = this.commentsRepository.findById(commentId).get();
 		this.commentsRepository.deleteById(comment.getId());
 		comment.setDislikes(comment.getDislikes() + 1);

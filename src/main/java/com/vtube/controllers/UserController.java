@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +28,10 @@ import com.vtube.exceptions.InvalidAgeException;
 import com.vtube.exceptions.InvalidEmailException;
 import com.vtube.exceptions.InvalidNameException;
 import com.vtube.exceptions.InvalidPasswordException;
+import com.vtube.exceptions.NoSuchVideoException;
 import com.vtube.exceptions.UserExistsException;
 import com.vtube.exceptions.UserNotFoundException;
+import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.service.SessionService;
 import com.vtube.service.UserService;
 import com.vtube.validations.UserValidation;
@@ -40,12 +43,18 @@ public class UserController {
 	private UserService userService;
 	
 	@Autowired
-	SessionService session;
+	private SessionService session;
 	
 	@PostMapping("/signup")
 	@ResponseBody
-	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response) throws EmailExistsException, UserExistsException, InvalidEmailException, InvalidNameException, InvalidPasswordException, InvalidAgeException{
-		
+	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response) throws EmailExistsException, UserExistsException, InvalidEmailException, InvalidNameException, InvalidPasswordException, InvalidAgeException, BadCredentialsException{
+		try {
+			if(this.session.getUserId(request) != null) {
+				throw new BadCredentialsException("Already logged in!");
+			}
+		} catch (UserNotFoundException e) {
+
+		}
 		UserValidation userValidator = userService.getUserValidator();
 		userValidator.confirm(signUpData);
 		
@@ -60,12 +69,6 @@ public class UserController {
 		
 		//add user to db and return the proper object to be sent as response
 		UserDTO user = this.userService.createUser(signUpData);
-		
-//		//create session
-//		HttpSession session = request.getSession();
-//		
-//		//add user id to session
-//		session.setAttribute("userId", user.getId());
 		
 		this.session.createSession(request, user.getId());
 		
@@ -138,6 +141,25 @@ public class UserController {
 		}
 		
 		return null;
+	}
+	
+	@PostMapping("/like")
+	public void likeVideo (@RequestParam(name= "videoId", required = false) Long id, HttpServletRequest request) throws UserNotFoundException, VideoNotFoundException {
+		Long userId = this.session.getUserId(request);
+		if(id == null) {
+			throw new VideoNotFoundException("");
+		}
+		this.userService.likeVideo(id, userId);
+	}
+	
+	@DeleteMapping("/like")
+	public void removeVideoLike (@RequestParam(name= "videoId", required = false) Long id, HttpServletRequest request) throws UserNotFoundException, VideoNotFoundException {
+		Long userId = this.session.getUserId(request);
+		if(id == null) {
+			throw new VideoNotFoundException("");
+		}
+		
+		this.userService.removeVideoLike(id, userId);
 	}
 	
 }

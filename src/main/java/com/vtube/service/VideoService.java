@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 //import java.util.Map;
 import java.util.NoSuchElementException;
@@ -18,11 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vtube.dal.CommentsRepository;
 import com.vtube.dal.UsersRepository;
 //import com.cloudinary.Cloudinary;
 //import com.cloudinary.utils.ObjectUtils;
 import com.vtube.dal.VideosRepository;
 import com.vtube.dto.BigVideoDTO;
+import com.vtube.dto.CommentDTO;
 import com.vtube.dto.CreatedVideoDTO;
 import com.vtube.dto.SmallVideoDTO;
 import com.vtube.dto.VideoDTO;
@@ -31,6 +34,7 @@ import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Channel;
+import com.vtube.model.Comment;
 import com.vtube.model.User;
 import com.vtube.model.Video;
 
@@ -56,7 +60,10 @@ public class VideoService {
 	
 	@Autowired
 	private UsersRepository usersRepository;
-
+	
+	@Autowired
+	private CommentsRepository commentsRepository;
+	
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -226,8 +233,39 @@ public class VideoService {
 		video.setChannelName(parent.getOwner().getName());
 		video.setChannelId(parent.getOwner().getId());
 		video.setLikes(parent.getUsersWhoLikeThisVideo().size());
+		video.setComments(this.convertFromCommentsToCommentsDTO(parent));
 		
 		return video;
+	}
+
+	private List<CommentDTO> convertFromCommentsToCommentsDTO(Video parent) {
+		if(parent == null) {
+			return new LinkedList<CommentDTO>();
+		}
+		List<CommentDTO> comments = new LinkedList<CommentDTO>();
+		parent.getComments()
+			.stream()
+			.forEach(comment -> {
+				CommentDTO tempComment = this.modelMapper.map(comment, CommentDTO.class);
+				tempComment.setUserNickName(comment.getAuthor().getNickName());
+			
+				List<CommentDTO> tempSubComments = new LinkedList<CommentDTO>();
+				this.commentsRepository.findAllBySuperCommentId(comment.getId())
+					.stream()
+					.forEach(tComment -> {
+						CommentDTO subComment = this.modelMapper.map(tComment, CommentDTO.class);
+						subComment.setUserNickName(tComment.getAuthor().getNickName());
+						subComment.setSubComments(new LinkedList<CommentDTO>());
+						tempSubComments.add(subComment);
+					});
+				tempComment.setSubComments(tempSubComments);
+				if(comment.getSuperComment() != null) {
+					tempComment.setSuperCommentId(comment.getSuperComment().getId());
+				}
+				comments.add(tempComment);
+			});
+		
+		return comments;
 	}
 
 //	public List<Video> findAllBySearchString(String search) {

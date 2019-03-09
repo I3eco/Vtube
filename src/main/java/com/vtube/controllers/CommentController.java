@@ -70,7 +70,7 @@ public class CommentController {
 			CommentDTO commentDTO = new CommentDTO();
 			this.mapper.map(comment, commentDTO);
 			commentDTO.setUserNickName(userService.findById(comment.getAuthor().getId()).get().getNickName());
-			List<Comment> subComments = this.commentService.findAllByCommentId( (int)((long)comment.getId()) );
+			List<Comment> subComments = this.commentService.findAllByCommentId( ((long)comment.getId()) );
 			for (Comment c : subComments) {
 				CommentDTO subCommentDTO = new CommentDTO();
 				this.mapper.map(c, subCommentDTO);
@@ -85,7 +85,7 @@ public class CommentController {
 	
 	@GetMapping("/commentReplies")
 	@ResponseBody
-	public List<Idto> getCommentsBySupercomment(@RequestParam("commentId") Integer commentId) {
+	public List<Idto> getCommentsBySupercomment(@RequestParam("commentId") Long commentId) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {
@@ -152,7 +152,7 @@ public class CommentController {
 	
 	@PostMapping("/subcomments")
 	@ResponseBody
-	public Idto addSubComment(@RequestParam("commentId") Integer commentId,
+	public Idto addSubComment(@RequestParam("commentId") Long commentId,
 			@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
@@ -191,7 +191,7 @@ public class CommentController {
 	@ResponseBody
 	public Idto editComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
 	
-		if (!this.commentService.findById( (int)((long)commentDTO.getId())) ) {
+		if (!this.commentService.findById(((long)commentDTO.getId())) ) {
 			try {
 				throw new NoSuchCommentException("No such comment!");
 			} catch (NoSuchCommentException e) {
@@ -223,7 +223,7 @@ public class CommentController {
 	
 	@DeleteMapping("/comments")
 	@ResponseBody
-	public Idto deleteComment(@RequestParam("commentId") Integer commentId, HttpServletRequest request) {
+	public Idto deleteComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {
@@ -257,7 +257,7 @@ public class CommentController {
 	
 	@PutMapping("/comments-like")
 	@ResponseBody
-	public Idto likeComment(@RequestParam("commentId") Integer commentId, HttpServletRequest request) {
+	public Idto likeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {
@@ -291,7 +291,7 @@ public class CommentController {
 	
 	@PutMapping("/comments-dislike")
 	@ResponseBody
-	public Idto dislikeComment(@RequestParam("commentId") Integer commentId, HttpServletRequest request) {
+	public Idto dislikeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {

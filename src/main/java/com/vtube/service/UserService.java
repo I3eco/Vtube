@@ -10,17 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import com.vtube.dal.ChannnelsRepository;
+import com.vtube.dal.ChannelsRepository;
 import com.vtube.dal.UsersRepository;
+import com.vtube.dal.VideosRepository;
 import com.vtube.dto.LoginDTO;
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.UserDTO;
 import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.BadCredentialsException;
 import com.vtube.exceptions.EmailExistsException;
-import com.vtube.exceptions.InvalidPasswordException;
+import com.vtube.exceptions.NoSuchVideoException;
 import com.vtube.exceptions.UserExistsException;
 import com.vtube.exceptions.UserNotFoundException;
+import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Channel;
 import com.vtube.model.User;
 import com.vtube.model.Video;
@@ -40,7 +42,10 @@ public class UserService {
 	private UsersRepository userRepository;
 
 	@Autowired
-	private ChannnelsRepository channelRepository;
+	private ChannelsRepository channelRepository;
+
+	@Autowired
+	private VideosRepository videosRepository;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -53,10 +58,8 @@ public class UserService {
 
 	public UserDTO createUser(SignUpDTO signUpData) {
 		User user = this.modelMapper.map(signUpData, User.class);
-		// TODO must make validation if user exists in database
 
 		user = this.userRepository.save(user);
-//		user = this.userRepository.findUserByEmail(user.getEmail()).get();
 
 		UserDTO userDTO = this.convertFromUserToUserDTO(user);
 
@@ -104,25 +107,9 @@ public class UserService {
 		if (!user.isPresent() || !this.checkPasswordById(loginData.getPassword(), user.get().getPassword())) {
 			throw new BadCredentialsException("Wrong username or password");
 		}
-		
+
 		return user.get().getId();
 	}
-
-//	private boolean isNullOrEmpty(String string) {
-//		return string == null || string.isEmpty();
-//	}
-
-//	public void validateEmail(String email) throws InvalidEmailException {
-//		if (isNullOrEmpty(email)) {
-//			throw new InvalidEmailException();
-//		}
-//		  try {
-//		      InternetAddress emailAddr = new InternetAddress(email);
-//		      emailAddr.validate();
-//		   } catch (AddressException ex) {
-//			   throw new InvalidEmailException();
-//		   }
-//	}
 
 	public void haveSameEmail(String email) throws EmailExistsException {
 		if (this.userRepository.findUserByEmail(email).isPresent()) {
@@ -182,4 +169,52 @@ public class UserService {
 		return videosForLaterDTO;
 	}
 
+	public void likeVideo(Long videoId, Long userId) throws VideoNotFoundException {
+		Video video = null;
+		
+		try {
+			System.out.println("Before");
+			video = this.videosRepository.findById(videoId).get();
+			System.out.println("After");
+		} catch (NoSuchElementException e) {
+			throw new VideoNotFoundException();
+		}
+		
+		User user = this.userRepository.findById(userId).get();
+		
+		//if user've already liked this video
+		if(user.getLikedVideos().contains(video)) {
+			return;
+		}
+		
+		video.getUsersWhoLikeThisVideo().add(user);
+		this.videosRepository.save(video);
+		
+		user.getLikedVideos().add(video);
+		this.userRepository.save(user);
+	}
+
+	public void removeVideoLike(Long videoId, Long userId) throws VideoNotFoundException {
+		Video video = null;
+		
+		try {
+			video = this.videosRepository.findById(videoId).get();
+		} catch (NoSuchElementException e) {
+			throw new VideoNotFoundException();
+		}
+		
+		User user = this.userRepository.findById(userId).get();
+		
+		//if user've already liked this video
+		if(!user.getLikedVideos().contains(video)) {
+			return;
+		}
+		
+		video.getUsersWhoLikeThisVideo().remove(user);
+		this.videosRepository.save(video);
+		
+		user.getLikedVideos().remove(video);
+		this.userRepository.save(user);
+		
+	}
 }

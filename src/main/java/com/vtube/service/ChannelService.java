@@ -1,15 +1,14 @@
 package com.vtube.service;
 
-import java.lang.reflect.Type;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.vtube.dal.ChannnelsRepository;
+import com.vtube.dal.ChannelsRepository;
 import com.vtube.dal.UsersRepository;
 import com.vtube.dto.ChannelDTO;
 import com.vtube.dto.SmallVideoDTO;
@@ -29,7 +28,7 @@ import com.vtube.model.Video;
 public class ChannelService {
 	
 	@Autowired
-	private ChannnelsRepository channelsRepository;
+	private ChannelsRepository channelsRepository;
 	
 	@Autowired
 	private UsersRepository usersRepository;
@@ -89,8 +88,17 @@ public class ChannelService {
 		ChannelDTO channel = this.modelMapper.map(parent, ChannelDTO.class);
 		
 		List<Video> parentVideos = parent.getOwnedVideos();
-		Type listType = new TypeToken<List<SmallVideoDTO>>(){}.getType();
-		List<SmallVideoDTO> videos = this.modelMapper.map(parentVideos, listType);
+//		Type listType = new TypeToken<List<SmallVideoDTO>>(){}.getType();
+//		List<SmallVideoDTO> videos = this.modelMapper.map(parentVideos, listType);
+		
+		List<SmallVideoDTO> videos =new LinkedList<SmallVideoDTO>();
+		
+		parentVideos.stream().forEach(video -> {
+			SmallVideoDTO tempVid = this.modelMapper.map(video, SmallVideoDTO.class);
+			tempVid.setChannelName(video.getOwner().getName());
+			videos.add(tempVid);
+		});
+		
 		channel.setOwnedVideos(videos);
 		
 //		for (int videoPosition = 0; videoPosition < videos.size(); videoPosition++) {
