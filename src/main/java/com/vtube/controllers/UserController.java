@@ -21,6 +21,7 @@ import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.dto.UserDTO;
 import com.vtube.dto.VideoDTO;
+import com.vtube.exceptions.BadCredentialsException;
 import com.vtube.exceptions.EmailExistsException;
 import com.vtube.exceptions.InvalidAgeException;
 import com.vtube.exceptions.InvalidEmailException;
@@ -57,14 +58,16 @@ public class UserController {
 		//encrypt user password
 		signUpData.setPassword(userService.encryptPassword(signUpData.getPassword()));
 		
-		//create session
-		HttpSession session = request.getSession();
-		
 		//add user to db and return the proper object to be sent as response
 		UserDTO user = this.userService.createUser(signUpData);
 		
-		//add user id to session
-		session.setAttribute("userId", user.getId());
+//		//create session
+//		HttpSession session = request.getSession();
+//		
+//		//add user id to session
+//		session.setAttribute("userId", user.getId());
+		
+		this.session.createSession(request, user.getId());
 		
 		return user;
 	}
@@ -82,7 +85,7 @@ public class UserController {
 	
 	@PostMapping("/login")
 	@ResponseBody
-	public SimpleMessageDTO login(@RequestBody LoginDTO user, HttpServletRequest request) throws UserNotFoundException, InvalidPasswordException {
+	public SimpleMessageDTO login(@RequestBody LoginDTO user, HttpServletRequest request) throws BadCredentialsException {
 		SimpleMessageDTO message = new SimpleMessageDTO();
 		if(request.getSession(false) != null) {
 			message.setMessage("Someone is already logged in");
