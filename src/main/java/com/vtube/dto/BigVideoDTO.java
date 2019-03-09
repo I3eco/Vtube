@@ -10,7 +10,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 /**
- * This is representation of main watch video page view. Must be returned as JSON on GET -> /video/id request
+ * This is representation of main watch video page view. Must be returned as JSON on GET -> /watch?id request
  * @author I3eco
  *
  */

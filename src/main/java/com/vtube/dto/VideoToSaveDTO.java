@@ -1,7 +1,5 @@
 package com.vtube.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

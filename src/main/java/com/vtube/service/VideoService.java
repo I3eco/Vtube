@@ -6,11 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
-//import java.util.Map;
 import java.util.NoSuchElementException;
-
-//import javax.transaction.Transactional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -18,11 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vtube.dal.CommentsRepository;
 import com.vtube.dal.UsersRepository;
-//import com.cloudinary.Cloudinary;
-//import com.cloudinary.utils.ObjectUtils;
 import com.vtube.dal.VideosRepository;
 import com.vtube.dto.BigVideoDTO;
+import com.vtube.dto.CommentDTO;
 import com.vtube.dto.CreatedVideoDTO;
 import com.vtube.dto.SmallVideoDTO;
 import com.vtube.dto.VideoDTO;
@@ -48,15 +46,15 @@ public class VideoService {
 	private static final String SUPPORTED_THUMBNAIL_FORMATS = "jpeg jpg png gif";
 	private static final String UPLOAD_DIR = "..\\VTubeFileStorage\\";
 
-//	private static final Cloudinary cloudinary = new Cloudinary
-//			("CLOUDINARY_URL=cloudinary://689344796343136:jpv4nWOWuPXqg-fYL0NFfxpAxVE@vtubeto");
-
 	@Autowired
 	private VideosRepository videosRepository;
 	
 	@Autowired
 	private UsersRepository usersRepository;
-
+	
+	@Autowired
+	private CommentsRepository commentsRepository;
+	
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -147,16 +145,6 @@ public class VideoService {
 		return path.toString();
 	}
 
-	// TODO test this
-//	@Transactional
-//	private String saveFileToCloud(MultipartFile file, String fileDir, Long ownerId) throws IOException {
-//		File tempFile = new File(file.getOriginalFilename());
-//		@SuppressWarnings("rawtypes")
-//		Map response = cloudinary.uploader().upload(tempFile, ObjectUtils.asMap("public_id", tempFile.getName()));
-//		String url = (String) response.get("url");
-//		return url;
-//	}
-//	
 	private void checkFileFormat(MultipartFile file, String formats, String inputType)
 			throws UnsupportedFileFormatException {
 		String type = file.getContentType().toLowerCase();
@@ -225,16 +213,44 @@ public class VideoService {
 		
 		video.setChannelName(parent.getOwner().getName());
 		video.setChannelId(parent.getOwner().getId());
-		video.setLikes(parent.getUsersWhoLikeThisVideo().size());
+		if(parent.getUsersWhoLikeThisVideo() != null)
+			video.setLikes(parent.getUsersWhoLikeThisVideo().size());
+		if(parent.getUsersWhoDisLikeThisVideo() != null)
+			video.setDislikes(parent.getUsersWhoDisLikeThisVideo().size());
+		video.setComments(this.convertFromCommentsToCommentsDTO(parent));
 		
 		return video;
 	}
 
-//	public List<Video> findAllBySearchString(String search) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
+	private List<CommentDTO> convertFromCommentsToCommentsDTO(Video parent) {
+		if(parent == null) {
+			return new LinkedList<CommentDTO>();
+		}
+		List<CommentDTO> comments = new LinkedList<CommentDTO>();
+		parent.getComments()
+			.stream()
+			.forEach(comment -> {
+				CommentDTO tempComment = this.modelMapper.map(comment, CommentDTO.class);
+				tempComment.setUserNickName(comment.getAuthor().getNickName());
+			
+				List<CommentDTO> tempSubComments = new LinkedList<CommentDTO>();
+				this.commentsRepository.findAllBySuperCommentId(comment.getId())
+					.stream()
+					.forEach(tComment -> {
+						CommentDTO subComment = this.modelMapper.map(tComment, CommentDTO.class);
+						subComment.setUserNickName(tComment.getAuthor().getNickName());
+						subComment.setSubComments(new LinkedList<CommentDTO>());
+						tempSubComments.add(subComment);
+					});
+				tempComment.setSubComments(tempSubComments);
+				if(comment.getSuperComment() != null) {
+					tempComment.setSuperCommentId(comment.getSuperComment().getId());
+				}
+				comments.add(tempComment);
+			});
+		
+		return comments;
+	}
 	
 
 }

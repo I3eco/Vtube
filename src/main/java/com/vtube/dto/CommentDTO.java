@@ -8,7 +8,7 @@ import lombok.NonNull;
 
 /**
  * This is representation of comment object for main watch video page view. 
- * Must be returned as part of a JSON on GET -> /video/id request
+ * Must be returned as part of a JSON on GET -> /watch?id request
  * @author I3eco
  *
  */
