@@ -44,6 +44,7 @@ public class CommentController {
 	@Autowired
 	private UserService userService;
 	
+	//Why? You do not need to get comments separately from the video
 	@GetMapping("/comments")
 	@ResponseBody
 	public List<Idto> getCommentsByVideo(@RequestParam("videoId") Long videoId) {
@@ -80,7 +81,7 @@ public class CommentController {
 		return commentDTOs;
 	}
 	
-	
+	//Why? You do not need to get comments separately from the video
 	@GetMapping("/commentReplies")
 	@ResponseBody
 	public List<Idto> getCommentsBySupercomment(@RequestParam("commentId") Long commentId) {
@@ -111,7 +112,7 @@ public class CommentController {
 		return commentDTOs;
 	}
 	
-	
+	//How to add content? You need to add content as user on comment creation!
 	@PostMapping("/comments")
 	@ResponseBody
 	public Idto addComment(@RequestParam("videoId") Long videoId,
@@ -147,7 +148,7 @@ public class CommentController {
 		return message;
 	}
 	
-	
+	//Commend is also added to video as super comment! Also how to add content? You need to add content as user on comment creation!
 	@PostMapping("/subcomments")
 	@ResponseBody
 	public Idto addSubComment(@RequestParam("commentId") Long commentId,
@@ -184,7 +185,7 @@ public class CommentController {
 		
 	}
 	
-	
+	//This creates new comment and deletes the one you call the request on instead of edit it
 	@PutMapping("/comments")
 	@ResponseBody
 	public Idto editComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request) {

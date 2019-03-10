@@ -120,17 +120,9 @@ public class UserController {
 	
 	@GetMapping("/videos")
 	@ResponseBody
-	public List<VideoDTO> getUserVideos(@RequestParam(name= "watched", required = false) boolean watched, @RequestParam(name= "liked", required = false) boolean liked, 
-			@RequestParam(name= "forLater", required = false) boolean forLater,
+	public List<VideoDTO> getUserVideos(@RequestParam(name= "watched", required = false) boolean watched, @RequestParam(name= "forLater", required = false) boolean forLater,
 			HttpServletRequest request) throws NotLoggedInException{
-		Long userId = null;
-		try {
-			userId = this.session.getUserId(request);
-		} catch (NotLoggedInException e) {
-			if(liked != true) {
-				throw new NotLoggedInException("You must log in to see that!");
-			}
-		}
+		Long userId = this.session.getUserId(request);
 		
 		if(watched == true) {
 			List<VideoDTO> watchedVideos = this.userService.getUserWatchedVideos(userId);
@@ -143,6 +135,14 @@ public class UserController {
 		}
 		
 		return null;
+	}
+	
+	@GetMapping("/liked/{userId}")
+	@ResponseBody
+	public List<VideoDTO> getUserLikedVideos(@PathVariable Long userId, HttpServletRequest request) throws UserNotFoundException{
+		List<VideoDTO> videos = this.userService.getUserLikedVideos(userId);
+		
+		return videos;
 	}
 	
 	@PostMapping("/like")
@@ -187,5 +187,14 @@ public class UserController {
 		Long userId = this.session.getUserId(request);
 		
 		this.userService.subscribeToChannel(userId, channelId);		
+	}
+
+	@PostMapping("/watchLater/{videoId}")
+	public SimpleMessageDTO watchVideoLater(@PathVariable Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+		Long userId = this.session.getUserId(request);	
+		
+		SimpleMessageDTO message = this.userService.watchVideoLater(userId, videoId);
+		
+		return message;
 	}
 }
