@@ -143,7 +143,7 @@ public class UserService {
 	}
 
 	public User getUserById(Long userId) {
-		return this.userRepository.findUserById(userId);
+		return this.userRepository.findById(userId).get();
 	}
 
 	public List<VideoDTO> getUserWatchedVideos(Long userId) {

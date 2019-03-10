@@ -25,7 +25,7 @@ public class CommentService {
 	@Autowired
 	private VideoService videoService;
 	
-	public List<Comment> findAllByVideoId(Integer videoId) {
+	public List<Comment> findAllByVideoId(Long videoId) {
 		Video video = this.videoService.getVideoById(videoId);
 		List<Comment>  comments= new LinkedList<Comment>();
 		video.getComments().forEach(c -> comments.add(c));
@@ -46,7 +46,7 @@ public class CommentService {
 		return commentsRepository.findAllBySuperCommentId(commentId);
 	}
 	
-	public void addComment(CommentDTO commentDTO, Long userId, Integer videoId) {
+	public void addComment(CommentDTO commentDTO, Long userId, Long videoId) {
 		User author = this.userService.getUserById(userId);
 		Video video = this.videoService.getVideoById(videoId);
 		Comment comment = new Comment(commentDTO.getId(), commentDTO.getContent(), 0, 0, null, author, video);	

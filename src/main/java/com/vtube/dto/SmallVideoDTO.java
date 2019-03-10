@@ -21,6 +21,8 @@ public class SmallVideoDTO implements Idto{
 	@NonNull
 	private String channelName;
 	
+	@NonNull
+	private String title;
 	
 	private int numberOfViews;
 	

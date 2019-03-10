@@ -27,9 +27,9 @@ public class VideoDTO extends SmallVideoDTO {
 
 	private LocalDate dateOfCreation;
 	
-	public VideoDTO(@NonNull Long id, @NonNull String channelName, int numberOfViews, @NonNull String thumbnailUrl, 
+	public VideoDTO(@NonNull Long id, @NonNull String channelName, @NonNull String title, int numberOfViews, @NonNull String thumbnailUrl, 
 			Long channelId, String description, LocalDate dateOfCreation) {
-		super(id, channelName, numberOfViews, thumbnailUrl);
+		super(id, channelName, title, numberOfViews, thumbnailUrl);
 		this.channelId = channelId;
 		this.description = description;
 		this.dateOfCreation = dateOfCreation;

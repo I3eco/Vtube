@@ -21,8 +21,8 @@ import com.vtube.dto.CommentDTO;
 import com.vtube.dto.Idto;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.exceptions.NoSuchCommentException;
-import com.vtube.exceptions.NoSuchVideoException;
 import com.vtube.exceptions.NotLoggedInException;
+import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Comment;
 import com.vtube.service.CommentService;
 import com.vtube.service.UserService;
@@ -46,12 +46,12 @@ public class CommentController {
 	
 	@GetMapping("/comments")
 	@ResponseBody
-	public List<Idto> getCommentsByVideo(@RequestParam("videoId") Integer videoId) {
+	public List<Idto> getCommentsByVideo(@RequestParam("videoId") Long videoId) {
 		
-		if (!this.videoService.findById( (long)((int)videoId)) ) {
+		if (!this.videoService.findById(videoId) ) {
 			try {
-				throw new NoSuchVideoException("No such video!");
-			} catch (NoSuchVideoException e) {
+				throw new VideoNotFoundException("No such video!");
+			} catch (VideoNotFoundException e) {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("No such video!");
@@ -114,13 +114,13 @@ public class CommentController {
 	
 	@PostMapping("/comments")
 	@ResponseBody
-	public Idto addComment(@RequestParam("videoId") Integer videoId,
+	public Idto addComment(@RequestParam("videoId") Long videoId,
 			@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
 		
-		if (!this.videoService.findById( (long)((int)videoId)) ) {
+		if (!this.videoService.findById(videoId)) {
 			try {
-				throw new NoSuchVideoException("No such video!");
-			} catch (NoSuchVideoException e) {
+				throw new VideoNotFoundException("No such video!");
+			} catch (VideoNotFoundException e) {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("No such video!");

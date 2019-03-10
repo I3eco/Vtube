@@ -22,7 +22,6 @@ import com.vtube.dto.Idto;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.FileExistsException;
-import com.vtube.exceptions.NoSuchVideoException;
 import com.vtube.exceptions.NotLoggedInException;
 import com.vtube.exceptions.UnauthorizedException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
@@ -112,42 +111,17 @@ public class VideoController {
 	
 	@DeleteMapping("/videos")
 	@ResponseBody
-	public Idto deleteVideo(@RequestParam("videoId") Long videoId, HttpServletRequest request) {
+	public Idto deleteVideo(@RequestParam("videoId") Long videoId, HttpServletRequest request) throws UnauthorizedException, NotLoggedInException, VideoNotFoundException {
 		
 		if (!this.videoService.findById(videoId)) {
-			try {
-				throw new NoSuchVideoException("No such video!");
-			} catch (NoSuchVideoException e) {
-				e.printStackTrace();
-				SimpleMessageDTO message = new SimpleMessageDTO();
-				message.setMessage("No such video!");
-				return message;
-			}
+			throw new VideoNotFoundException("No such video!");
 		}
 		
-		HttpSession session = request.getSession();
-		if (session == null) {
-			try {
-				throw new NotLoggedInException("You are not logged in!");
-			} catch (NotLoggedInException e) {
-				e.printStackTrace();
-				SimpleMessageDTO message = new SimpleMessageDTO();
-				message.setMessage("You are not logged in!");
-				return message;
-			}
-		}
+		Long sessionUserId = this.session.getUserId(request);
 		
-		Long sessionUserId = (Long) session.getAttribute("userId");
-		Long videoUserId = (Long) this.videoService.getVideoById( ( (int)((long)videoId)) ).getOwner().getOwner().getId();
+		Long videoUserId = this.videoService.getVideoById(videoId).getOwner().getOwner().getId();
 		if (sessionUserId != videoUserId) {
-			try {
-				throw new UnauthorizedException("You are allowed to delete your videos only!");
-			} catch (UnauthorizedException e) {
-				e.printStackTrace();
-				SimpleMessageDTO message = new SimpleMessageDTO();
-				message.setMessage("No such video!");
-				return message;
-			}
+			throw new UnauthorizedException("You are allowed to delete your videos only!");
 		}
 		
 		this.videoService.deleteVideo(videoId);
@@ -155,9 +129,5 @@ public class VideoController {
 		message.setMessage("Your video was deleted!");
 		return message;
 	}
-	
-	
-	
-	
 	
 }
