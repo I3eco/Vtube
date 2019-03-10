@@ -259,7 +259,15 @@ public class VideoService {
 	}
 
 	public List<Video> findAllBySearchString(String search) {
-		return this.videosRepository.findByTitleIgnoreCaseContaining(search);
+		List<Video> videos = new LinkedList<Video>();
+		List<Video> allVideos = this.videosRepository.findAll();
+		allVideos.forEach(video -> {
+			if (video.getTitle().contains(search)) {
+				videos.add(video);
+			}
+		});
+		return videos;
+		//return this.videosRepository.findByTitleIgnoreCaseContaining(search);
 	}
 
 	@Transactional
