@@ -255,6 +255,11 @@ public class VideoService {
 	public List<Video> findAllBySearchString(String search) {
 		return this.videosRepository.findByTitleIgnoreCaseContaining(search);
 	}
+
+	public void deleteVideo(Long videoId) {
+		this.videosRepository.deleteById(videoId);
+		
+	}
 	
 
 }

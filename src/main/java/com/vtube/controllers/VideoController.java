@@ -4,9 +4,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +22,9 @@ import com.vtube.dto.Idto;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.FileExistsException;
+import com.vtube.exceptions.NoSuchVideoException;
 import com.vtube.exceptions.NotLoggedInException;
+import com.vtube.exceptions.UnauthorizedException;
 import com.vtube.exceptions.UnsupportedFileFormatException;
 import com.vtube.exceptions.UserDoNotHaveChannelException;
 import com.vtube.exceptions.VideoNotFoundException;
@@ -104,6 +108,54 @@ public class VideoController {
 		}
 		return videoDTOs;
 	}
+	
+	
+	@DeleteMapping("/videos")
+	@ResponseBody
+	public Idto deleteVideo(@RequestParam("videoId") Long videoId, HttpServletRequest request) {
+		
+		if (!this.videoService.findById(videoId)) {
+			try {
+				throw new NoSuchVideoException("No such video!");
+			} catch (NoSuchVideoException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("No such video!");
+				return message;
+			}
+		}
+		
+		HttpSession session = request.getSession();
+		if (session == null) {
+			try {
+				throw new NotLoggedInException("You are not logged in!");
+			} catch (NotLoggedInException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are not logged in!");
+				return message;
+			}
+		}
+		
+		Long sessionUserId = (Long) session.getAttribute("userId");
+		Long videoUserId = (Long) this.videoService.getVideoById( ( (int)((long)videoId)) ).getOwner().getOwner().getId();
+		if (sessionUserId != videoUserId) {
+			try {
+				throw new UnauthorizedException("You are allowed to delete your videos only!");
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("No such video!");
+				return message;
+			}
+		}
+		
+		this.videoService.deleteVideo(videoId);
+		SimpleMessageDTO message = new SimpleMessageDTO();
+		message.setMessage("Your video was deleted!");
+		return message;
+	}
+	
 	
 	
 	
