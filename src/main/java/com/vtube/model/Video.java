@@ -49,9 +49,6 @@ public class Video {
 	@Column(name = "date_of_creation", nullable = false, columnDefinition = "DATE")
 	@NonNull
 	private LocalDate dateOfCreation;
-	
-//	@Column(name = "dislikes", nullable = false)
-//	private int dislikes = 0;
     
     //History of users who not like this video
     @ManyToMany(fetch = FetchType.LAZY,
@@ -86,13 +83,4 @@ public class Video {
     private List<User> usersWhoLikeThisVideo;
 
 	private int numberOfViews = 0;
-    
-    //Users can have videos for watching later
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                CascadeType.PERSIST,
-                CascadeType.MERGE
-            }, 
-            mappedBy = "videosForLater")
-    private List<User> usersWantToWatchThisVideoLater;
 }

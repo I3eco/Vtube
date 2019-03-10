@@ -36,5 +36,10 @@ public class NotLoggedInException extends Exception {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
+	
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 
 }
