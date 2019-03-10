@@ -13,21 +13,19 @@
 					{
 						"key": "Content-Type",
 						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"nickName\":\"tadjikistanecha\",\n\t\"firstName\":\"\",\n\t\"lastName\":\"\",\n\t\"email\":\"steven213434@nekazvam.com\",\n\t\"password\":\"Dedaznam1#\",\n\t\"age\":18\n}"
+					"raw": "{\n\t\"nickName\":\"Zdravec\",\n\t\"firstName\":\"Zdravko\",\n\t\"lastName\":\"Zhelyazkov\",\n\t\"email\":\"mnoo_zdrav@yahoo.com\",\n\t\"password\":\"Qwerty1#\",\n\t\"age\":32\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/signup",
-					"protocol": "http",
+					"raw": "{{url}}/signup",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
 					"path": [
 						"signup"
 					]
@@ -55,15 +53,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/5",
-					"protocol": "http",
+					"raw": "{{url}}/user/1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
 					"path": [
 						"user",
-						"5"
+						"1"
 					]
 				}
 			},
@@ -83,15 +79,13 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\":\"\",\n\t\"password\":\"\"\n}"
+					"raw": "{\n\t\"email\":\"veselin.g.v@gmail.com\",\n\t\"password\":\"Qwerty1#\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/login",
-					"protocol": "http",
+					"raw": "{{url}}/login",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
 					"path": [
 						"login"
 					]
@@ -109,12 +103,10 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/logout",
-					"protocol": "http",
+					"raw": "{{url}}/logout",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
 					"path": [
 						"logout"
 					]
@@ -123,7 +115,7 @@
 			"response": []
 		},
 		{
-			"name": "Create video",
+			"name": "Create channel",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -136,17 +128,222 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"title\":\"\",\n\t\"videoUrl\":\"\",\n\t\"thumbnailUrl\":\"\",\n\t\"description\":\"\"\n}"
+					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/videos",
-					"protocol": "http",
+					"raw": "{{url}}/channel",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
+					"path": [
+						"channel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user's channel",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/channel",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"channel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user's watched videos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/videos?watched=true",
+					"host": [
+						"{{url}}"
+					],
 					"path": [
 						"videos"
+					],
+					"query": [
+						{
+							"key": "watched",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user's watch later videos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/videos?forLater=true",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"videos"
+					],
+					"query": [
+						{
+							"key": "forLater",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get liked videos of a user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/liked/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"liked",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get channel",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/channel?id=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"channel"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Subscribe/Unsubscribe to channel",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/subscribe?channelId=2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"subscribe"
+					],
+					"query": [
+						{
+							"key": "channelId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload video",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": ""
+						},
+						{
+							"key": "thumbnail",
+							"type": "file",
+							"src": ""
+						},
+						{
+							"key": "title",
+							"value": "Pretty cool video",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "  ",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/videos",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"videos"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -169,19 +366,17 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/videos?id=something",
-					"protocol": "http",
+					"raw": "{{url}}/videos?videoId=1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
 					"path": [
 						"videos"
 					],
 					"query": [
 						{
-							"key": "id",
-							"value": "something"
+							"key": "videoId",
+							"value": "1"
 						}
 					]
 				}
@@ -189,7 +384,7 @@
 			"response": []
 		},
 		{
-			"name": "Get video by id",
+			"name": "Watch video by id",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -198,19 +393,17 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/watch?id=something",
-					"protocol": "http",
+					"raw": "{{url}}/watch?videoId=2",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
 					"path": [
 						"watch"
 					],
 					"query": [
 						{
-							"key": "id",
-							"value": "something"
+							"key": "videoId",
+							"value": "2"
 						}
 					]
 				}
@@ -218,9 +411,244 @@
 			"response": []
 		},
 		{
-			"name": "Create super comment",
+			"name": "Add/remove to watch video later list",
 			"request": {
 				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/watchLater/3",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"watchLater",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Like Video",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/like?videoId=2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"like"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove like from video",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/like?videoId=2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"like"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Dislike video",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/dislike?videoId=2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dislike"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove dislike from video",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/dislike?videoId=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dislike"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search videos",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "search",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/results?search=Pretty cool",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"results"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "Pretty cool"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add comment on video",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"content\":\"\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/comments?videoId=2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"comments"
+					],
+					"query": [
+						{
+							"key": "videoId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add comment on comment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"content\":\"\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/subcomments?commentId=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"subcomments"
+					],
+					"query": [
+						{
+							"key": "commentId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit comment???",
+			"request": {
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -231,59 +659,33 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"content\":\"\"\n}"
+					"raw": "{\n                    \"id\": 4,\n                    \"content\": \"wdwdwwdwdwdda\",\n                    \"userNickName\": \"I3eco\",\n                    \"superCommentId\": 0,\n                    \"likes\": 0,\n                    \"dislikes\": 0,\n                    \"subComments\": []\n                }"
 				},
 				"url": {
-					"raw": "http://localhost:8080/sComment?id=(something)",
-					"protocol": "http",
+					"raw": "{{url}}/comments",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8080",
 					"path": [
-						"sComment"
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "(something)"
-						}
+						"comments"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Create comment",
+			"name": "Delete comment",
 			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
+				"method": "GET",
+				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"content\":\"\"\n}"
+					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/comment?id=(something)",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
+					"raw": "/",
 					"path": [
-						"comment"
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "(something)"
-						}
+						""
 					]
 				}
 			},
