@@ -56,14 +56,12 @@ public class CommentService {
 	public void addSubComment(CommentDTO commentDTO, Long userId, Long commentId) {
 		User author = this.userService.getUserById(userId);
 		Comment superComment = this.commentsRepository.findById(commentId).get();
-		Video video = superComment.getCommentedVideo();
-		Comment comment = new Comment(commentDTO.getId(), commentDTO.getContent(), 0, 0, superComment, author, video);
+		Comment comment = new Comment(commentDTO.getId(), commentDTO.getContent(), 0, 0, superComment, author, null);
 		this.commentsRepository.save(comment);
 	}
 	
 	public void editComment(CommentDTO commentDTO) {
 		Comment comment = this.commentsRepository.findById(commentDTO.getId()).get();
-		this.commentsRepository.deleteById(comment.getId());
 		comment.setContent(commentDTO.getContent());
 		this.commentsRepository.save(comment);
 	}
@@ -75,14 +73,12 @@ public class CommentService {
 
 	public void likeComment(Long commentId) {
 		Comment comment = this.commentsRepository.findById(commentId).get();
-		this.commentsRepository.deleteById(comment.getId());
 		comment.setLikes(comment.getLikes() + 1);
 		this.commentsRepository.save(comment);
 	}
 
 	public void dislikeComment(Long commentId) {
 		Comment comment = this.commentsRepository.findById(commentId).get();
-		this.commentsRepository.deleteById(comment.getId());
 		comment.setDislikes(comment.getDislikes() + 1);
 		this.commentsRepository.save(comment);
 	}
