@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vtube.dto.CommentDTO;
+import com.vtube.dto.ContentDTO;
 import com.vtube.dto.Idto;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.exceptions.NoSuchCommentException;
@@ -44,7 +45,7 @@ public class CommentController {
 	@Autowired
 	private UserService userService;
 	
-	//Why? You do not need to get comments separately from the video
+	
 	@GetMapping("/comments")
 	@ResponseBody
 	public List<Idto> getCommentsByVideo(@RequestParam("videoId") Long videoId) {
@@ -81,7 +82,7 @@ public class CommentController {
 		return commentDTOs;
 	}
 	
-	//Why? You do not need to get comments separately from the video
+	
 	@GetMapping("/commentReplies")
 	@ResponseBody
 	public List<Idto> getCommentsBySupercomment(@RequestParam("commentId") Long commentId) {
@@ -112,11 +113,11 @@ public class CommentController {
 		return commentDTOs;
 	}
 	
-	//How to add content? You need to add content as user on comment creation!
+	
 	@PostMapping("/comments")
 	@ResponseBody
 	public Idto addComment(@RequestParam("videoId") Long videoId,
-			@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
+			@RequestBody ContentDTO contentDTO, HttpServletRequest request) {
 		
 		if (!this.videoService.findById(videoId)) {
 			try {
@@ -142,17 +143,17 @@ public class CommentController {
 		}
 		
 		Long userId = (Long) session.getAttribute("userId");
-		this.commentService.addComment(commentDTO, userId, videoId);
+		this.commentService.addComment(contentDTO, userId, videoId);
 		SimpleMessageDTO message = new SimpleMessageDTO();
 		message.setMessage("Your comment was added!");
 		return message;
 	}
 	
-	//Commend is also added to video as super comment! Also how to add content? You need to add content as user on comment creation!
+	
 	@PostMapping("/subcomments")
 	@ResponseBody
 	public Idto addSubComment(@RequestParam("commentId") Long commentId,
-			@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
+			@RequestBody ContentDTO contentDTO, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {
@@ -178,14 +179,14 @@ public class CommentController {
 		}
 		
 		Long userId = (Long) session.getAttribute("userId");
-		this.commentService.addSubComment(commentDTO, userId, commentId);
+		this.commentService.addSubComment(contentDTO, userId, commentId);
 		SimpleMessageDTO message = new SimpleMessageDTO();
 		message.setMessage("Your comment was added!");
 		return message;
 		
 	}
 	
-	//This creates new comment and deletes the one you call the request on instead of edit it
+	
 	@PutMapping("/comments")
 	@ResponseBody
 	public Idto editComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request) {

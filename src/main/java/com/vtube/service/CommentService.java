@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.vtube.dal.CommentsRepository;
 import com.vtube.dto.CommentDTO;
+import com.vtube.dto.ContentDTO;
 import com.vtube.model.Comment;
 import com.vtube.model.User;
 import com.vtube.model.Video;
@@ -46,17 +47,17 @@ public class CommentService {
 		return commentsRepository.findAllBySuperCommentId(commentId);
 	}
 	
-	public void addComment(CommentDTO commentDTO, Long userId, Long videoId) {
+	public void addComment(ContentDTO contentDTO, Long userId, Long videoId) {
 		User author = this.userService.getUserById(userId);
 		Video video = this.videoService.getVideoById(videoId);
-		Comment comment = new Comment(commentDTO.getId(), commentDTO.getContent(), 0, 0, null, author, video);	
+		Comment comment = new Comment((long)0, contentDTO.getContent(), 0, 0, null, author, video);	
 		this.commentsRepository.save(comment);
 	}
 	
-	public void addSubComment(CommentDTO commentDTO, Long userId, Long commentId) {
+	public void addSubComment(ContentDTO contentDTO, Long userId, Long commentId) {
 		User author = this.userService.getUserById(userId);
 		Comment superComment = this.commentsRepository.findById(commentId).get();
-		Comment comment = new Comment(commentDTO.getId(), commentDTO.getContent(), 0, 0, superComment, author, null);
+		Comment comment = new Comment((long)0, contentDTO.getContent(), 0, 0, superComment, author, null);
 		this.commentsRepository.save(comment);
 	}
 	
