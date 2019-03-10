@@ -30,10 +30,10 @@ public class BigVideoDTO extends VideoDTO {
 	@NonNull
 	List<SmallVideoDTO> offeredVideos;
 	
-	public BigVideoDTO(@NonNull Long id, @NonNull String channelName, int numberOfViews, @NonNull String thumbnailUrl,
+	public BigVideoDTO(@NonNull Long id, @NonNull String channelName, @NonNull String title, int numberOfViews, @NonNull String thumbnailUrl,
 			Long channelId, String description, LocalDate dateOfCreation,
 			String url, int likes, int dislikes, List<CommentDTO> comments, List<SmallVideoDTO> offeredVideos) {
-		super(id, channelName, numberOfViews, thumbnailUrl, channelId, description, dateOfCreation);
+		super(id, channelName, title, numberOfViews, thumbnailUrl, channelId, description, dateOfCreation);
 		this.url = url;
 		this.likes = likes;
 		this.dislikes = dislikes;

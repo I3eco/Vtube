@@ -35,5 +35,10 @@ public class UnauthorizedException extends Exception {
 	 * 
 	 */
 	private static final long serialVersionUID = -5155304085972348082L;
+	
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }	
 
 }

@@ -10,12 +10,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vtube.dal.ChannelsRepository;
 import com.vtube.dal.CommentsRepository;
 import com.vtube.dal.UsersRepository;
 import com.vtube.dal.VideosRepository;
@@ -56,6 +59,9 @@ public class VideoService {
 	private CommentsRepository commentsRepository;
 	
 	@Autowired
+	private ChannelsRepository channelsRepository;
+	
+	@Autowired
 	private ModelMapper modelMapper;
 
 	public boolean findById(Long videoId) {
@@ -67,7 +73,7 @@ public class VideoService {
 		return true;
 	}
 
-	public Video getVideoById(Integer videoId) {
+	public Video getVideoById(Long videoId) {
 		return this.videosRepository.findById(videoId).get();
 	}
 
@@ -256,9 +262,40 @@ public class VideoService {
 		return this.videosRepository.findByTitleIgnoreCaseContaining(search);
 	}
 
+	@Transactional
 	public void deleteVideo(Long videoId) {
-		this.videosRepository.deleteById(videoId);
+		Video video = this.videosRepository.findById(videoId).get();
+		Channel channel = this.channelsRepository.findById(video.getOwner().getId()).get();
+		List<User> usersWhoWatchedVideo = this.usersRepository.findAllBywatchedVideos(video);
+		List<User> usersToWatchLater = this.usersRepository.findAllByVideosForLater(video);
+		List<User> usersWhoLikeVideo = this.usersRepository.findAllByLikedVideos(video);
 		
+		usersWhoWatchedVideo.stream().forEach(user -> {	
+			user.getWatchedVideos().remove(video);
+			this.usersRepository.save(user);
+		});
+		usersToWatchLater.stream().forEach(user -> {
+			user.getVideosForLater().remove(video);
+			this.usersRepository.save(user);
+		});
+		usersWhoLikeVideo.stream().forEach(user -> {
+			user.getLikedVideos().remove(video);
+			this.usersRepository.save(user);
+		});
+		
+		this.deleteVideosFromDisk(videoId);
+		this.videosRepository.delete(video);
+		channel.getOwnedVideos().remove(video);
+		this.channelsRepository.save(channel);
+	}
+	
+	public void deleteVideosFromDisk(Long videoId) {
+		Video video = this.videosRepository.findById(videoId).get();
+		File videoFile = new File(video.getUrl());
+		File thumbnailFile = new File(video.getThumbnail());
+		
+		videoFile.delete();
+		thumbnailFile.delete();
 	}
 	
 

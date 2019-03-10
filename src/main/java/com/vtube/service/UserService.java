@@ -15,6 +15,7 @@ import com.vtube.dal.UsersRepository;
 import com.vtube.dal.VideosRepository;
 import com.vtube.dto.LoginDTO;
 import com.vtube.dto.SignUpDTO;
+import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.dto.UserDTO;
 import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.BadCredentialsException;
@@ -29,6 +30,7 @@ import com.vtube.model.User;
 import com.vtube.model.Video;
 import com.vtube.validations.UserValidation;
 
+import javassist.expr.NewArray;
 import lombok.NonNull;
 
 /**
@@ -143,7 +145,7 @@ public class UserService {
 	}
 
 	public User getUserById(Long userId) {
-		return this.userRepository.findUserById(userId);
+		return this.userRepository.findById(userId).get();
 	}
 
 	public List<VideoDTO> getUserWatchedVideos(Long userId) {
@@ -169,14 +171,29 @@ public class UserService {
 
 		return videosForLaterDTO;
 	}
+	
+	public List<VideoDTO> getUserLikedVideos(Long userId) throws UserNotFoundException {
+		User user = null;
+		try {
+			user = this.userRepository.findById(userId).get();
+		} catch (NoSuchElementException e) {
+			throw new UserNotFoundException();
+		}
+
+		List<Video> likedVideos = user.getLikedVideos();
+		List<VideoDTO> likedVideosDTO = new LinkedList<VideoDTO>();
+
+		likedVideos.stream()
+				.forEach(video -> likedVideosDTO.add(this.videoService.convertFromVideoToVideoDTO(video)));
+
+		return likedVideosDTO;
+	}
 
 	public void likeVideo(Long videoId, Long userId) throws VideoNotFoundException {
 		Video video = null;
 		
 		try {
-			System.out.println("Before");
 			video = this.videosRepository.findById(videoId).get();
-			System.out.println("After");
 		} catch (NoSuchElementException e) {
 			throw new VideoNotFoundException();
 		}
@@ -297,5 +314,29 @@ public class UserService {
 		
 		this.userRepository.save(user);
 		this.channelRepository.save(channel);
+	}
+
+	public SimpleMessageDTO watchVideoLater(Long userId, Long videoId) throws VideoNotFoundException {
+		Video video = null;
+		try {
+			video = this.videosRepository.findById(videoId).get();
+		} catch (NoSuchElementException e){
+			throw new VideoNotFoundException();
+		}
+		
+		SimpleMessageDTO message = new SimpleMessageDTO();
+		User user = this.userRepository.findById(userId).get();
+
+		if(!user.getVideosForLater().contains(video)) {
+			message.setMessage("Video added to watch later list!");
+			user.getVideosForLater().add(video);
+		} else {
+			message.setMessage("Video removed from watch later list!");
+			user.getVideosForLater().remove(video);
+		}
+
+		this.userRepository.save(user);
+		
+		return message;
 	}
 }
