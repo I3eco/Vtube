@@ -79,7 +79,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\":\"veselin@gmail.com\",\n\t\"password\":\"Qwerty1#\"\n}"
+					"raw": "{\n\t\"email\":\"veselin.g.v@gmail.com\",\n\t\"password\":\"Qwerty1#\"\n}"
 				},
 				"url": {
 					"raw": "{{url}}/login",
