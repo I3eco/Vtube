@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,9 +78,7 @@ public class VideoController {
 			BigVideoDTO video = this.videoService.getBigVideoDTOById(id);
 			return video;
 		}
-		
 		BigVideoDTO video = this.videoService.getBigVideoDTOById(id, userId);
-		
 		return video;
 	}
 	

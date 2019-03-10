@@ -51,6 +51,5 @@ public class Comment {
 	//Every comment have video on which it is written
 	@ManyToOne
 	@JoinColumn(name="video_id", nullable = false)
-	@NonNull
 	private Video commentedVideo;
 }

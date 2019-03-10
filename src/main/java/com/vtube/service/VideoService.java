@@ -182,8 +182,8 @@ public class VideoService {
 	
 	public BigVideoDTO getBigVideoDTOById(Long id, Long userId) throws VideoNotFoundException {
 		BigVideoDTO bigVideoDTO = this.getBigVideoDTOById(id);
-		
 		User user = this.usersRepository.findById(userId).get();
+		
 		Video video = this.videosRepository.findById(id).get();
 		
 		if(!user.getWatchedVideos().contains(video)) {
