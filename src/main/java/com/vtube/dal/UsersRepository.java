@@ -15,5 +15,5 @@ public interface UsersRepository extends JpaRepository<User, Long>{
 	Optional<User> findUserByNickName(String nickName);
 	List<User> findAllBywatchedVideos(Video video);
 	List<User> findAllByVideosForLater(Video video);
-	List<User> findAllByLikedVideos(Video video);	
+	List<User> findAllByLikedVideos(Video video);
 }

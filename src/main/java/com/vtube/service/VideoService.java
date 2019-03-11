@@ -6,9 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -77,8 +80,12 @@ public class VideoService {
 		return this.videosRepository.findById(videoId).get();
 	}
 
-	public CreatedVideoDTO uploadVideoData(MultipartFile file, MultipartFile thumbnail, String title,
-			String description, Long ownerId, Channel channel)
+	public CreatedVideoDTO uploadVideoData(MultipartFile file, 
+			MultipartFile thumbnail, 
+			String title,
+			String description, 
+			Long ownerId, 
+			Channel channel)
 			throws FileExistsException, VideoNotFoundException, UnsupportedFileFormatException {
 		this.checkFileFormat(file, SUPPORTED_VIDEO_FORMATS, "Video");
 		this.checkFileFormat(thumbnail, SUPPORTED_THUMBNAIL_FORMATS, "Picture");
@@ -259,15 +266,23 @@ public class VideoService {
 	}
 
 	public List<Video> findAllBySearchString(String search) {
-//		List<Video> videos = new LinkedList<Video>();
-//		List<Video> allVideos = this.videosRepository.findAll();
-//		allVideos.forEach(video -> {
-//			if (video.getTitle().contains(search)) {
-//				videos.add(video);
-//			}
-//		});
-//		return videos;
-		return this.videosRepository.findByTitleIgnoreCaseContaining(search);
+		
+		String searchAsRegex = this.convertSearchToRegex(search);
+		
+		return this.videosRepository.findByTitle(searchAsRegex);
+	}
+	
+	public String convertSearchToRegex(String searchInput) {
+		String start = "(?=.*";
+		String[] searchArr = searchInput.split(" ");
+		
+		for(int wordIndex = 0; wordIndex < searchArr.length; wordIndex++) {
+			StringBuilder appender = new StringBuilder(searchArr[wordIndex]);
+			appender.insert(0, start);
+			searchArr[wordIndex] = appender.toString();
+		}
+		
+		return String.join(")", searchArr) + ")";
 	}
 
 	@Transactional
@@ -292,7 +307,9 @@ public class VideoService {
 		});
 		
 		this.deleteVideosFromDisk(videoId);
+		
 		this.videosRepository.delete(video);
+		
 		channel.getOwnedVideos().remove(video);
 		this.channelsRepository.save(channel);
 	}

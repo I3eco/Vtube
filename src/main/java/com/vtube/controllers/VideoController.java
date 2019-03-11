@@ -2,6 +2,7 @@ package com.vtube.controllers;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,8 +52,11 @@ public class VideoController {
 	@PostMapping("/videos")
 	@ResponseBody
 	public CreatedVideoDTO uploadVideo(
-			@RequestParam("file") MultipartFile file, @RequestParam("thumbnail") MultipartFile thumbnail, 
-			@RequestParam(name= "title", required = false) String title, @RequestParam(name="description", required = false) String description, 
+			@RequestParam("file") MultipartFile file, 
+			@RequestParam("thumbnail") MultipartFile thumbnail, 
+			@RequestParam(name= "title", required = false) 
+			String title, @RequestParam(name="description", required = false) 
+			String description, 
 			HttpServletRequest request
 			) throws NotLoggedInException, UserDoNotHaveChannelException, VideoNotFoundException, FileExistsException, UnsupportedFileFormatException {
 		Long userId = this.session.getUserId(request);
