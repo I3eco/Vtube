@@ -273,16 +273,10 @@ public class VideoService {
 	}
 	
 	public String convertSearchToRegex(String searchInput) {
-		String start = "(?=.*";
-		String[] searchArr = searchInput.split(" ");
+		String regexStart = "(?=.*";
+		String regexEnd = ")";
 		
-		for(int wordIndex = 0; wordIndex < searchArr.length; wordIndex++) {
-			StringBuilder appender = new StringBuilder(searchArr[wordIndex]);
-			appender.insert(0, start);
-			searchArr[wordIndex] = appender.toString();
-		}
-		
-		return String.join(")", searchArr) + ")";
+		return regexStart + searchInput.replaceAll(" ", regexEnd + regexStart) + regexEnd;	
 	}
 
 	@Transactional
