@@ -255,7 +255,7 @@ public class CommentController {
 	}
 	
 	
-	@PutMapping("/comments-like")
+	@PutMapping("/commentsLike")
 	@ResponseBody
 	public Idto likeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
@@ -289,7 +289,7 @@ public class CommentController {
 	}
 	
 	
-	@PutMapping("/comments-dislike")
+	@PutMapping("/commentsDislike")
 	@ResponseBody
 	public Idto dislikeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
