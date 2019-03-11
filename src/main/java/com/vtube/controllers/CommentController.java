@@ -24,6 +24,7 @@ import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.exceptions.IllegalSubcommentException;
 import com.vtube.exceptions.NoSuchCommentException;
 import com.vtube.exceptions.NotLoggedInException;
+import com.vtube.exceptions.UnauthorizedException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Comment;
 import com.vtube.service.CommentService;
@@ -214,6 +215,7 @@ public class CommentController {
 			}
 		}
 		
+		
 		HttpSession session = request.getSession();
 		if (session == null) {
 			try {
@@ -222,6 +224,20 @@ public class CommentController {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("You are not logged in!");
+				return message;
+			}
+		}
+		
+		long commentOwnerId = this.commentService.getCommentById(commentDTO.getId()).getAuthor().getId();
+		long sessionUserId = (long)session.getAttribute("userId");
+		
+		if (commentOwnerId != sessionUserId) {
+			try {
+			throw new UnauthorizedException("You are allowed to edit only comments posted by you!");
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are allowed to edit only comments posted by you!");
 				return message;
 			}
 		}
@@ -256,6 +272,20 @@ public class CommentController {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("You are not logged in!");
+				return message;
+			}
+		}
+		
+		long commentOwnerId = this.commentService.getCommentById(commentId).getAuthor().getId();
+		long sessionUserId = (long)session.getAttribute("userId");
+		
+		if (commentOwnerId != sessionUserId) {
+			try {
+			throw new UnauthorizedException("You are allowed to delete only comments posted by you!");
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are allowed to delete only comments posted by you!");
 				return message;
 			}
 		}

@@ -3,7 +3,7 @@ package com.vtube.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="You are allowed to delete your videos only!")
+@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="You are allowed to manipulate your videos and comments only!")
 public class UnauthorizedException extends Exception {
 
 	public UnauthorizedException() {
