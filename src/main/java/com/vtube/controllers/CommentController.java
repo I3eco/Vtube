@@ -66,6 +66,13 @@ public class CommentController {
 		}
 		
 		List<Comment> comments = this.commentService.findAllByVideoId(videoId);
+		if (comments == null || comments.isEmpty()) {
+			SimpleMessageDTO message = new SimpleMessageDTO();
+			message.setMessage("There are no comments on this video!");
+			List<Idto> messages = new LinkedList<Idto>();
+			messages.add(message);
+			return messages;
+		}
 		List<Idto> commentDTOs = new LinkedList<Idto>();
 		
 		for (Comment comment : comments) {
@@ -103,6 +110,13 @@ public class CommentController {
 		}
 		
 		List<Comment> comments = this.commentService.findAllByCommentId(commentId);
+		if (comments == null || comments.isEmpty()) {
+			SimpleMessageDTO message = new SimpleMessageDTO();
+			message.setMessage("There are no subcomments on this comment!");
+			List<Idto> messages = new LinkedList<Idto>();
+			messages.add(message);
+			return messages;
+		}
 		List<Idto> commentDTOs = new LinkedList<Idto>();
 		
 		for (Comment comment : comments) {
