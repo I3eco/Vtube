@@ -21,8 +21,10 @@ import com.vtube.dto.CommentDTO;
 import com.vtube.dto.ContentDTO;
 import com.vtube.dto.Idto;
 import com.vtube.dto.SimpleMessageDTO;
+import com.vtube.exceptions.IllegalSubcommentException;
 import com.vtube.exceptions.NoSuchCommentException;
 import com.vtube.exceptions.NotLoggedInException;
+import com.vtube.exceptions.UnauthorizedException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.model.Comment;
 import com.vtube.service.CommentService;
@@ -64,6 +66,13 @@ public class CommentController {
 		}
 		
 		List<Comment> comments = this.commentService.findAllByVideoId(videoId);
+		if (comments == null || comments.isEmpty()) {
+			SimpleMessageDTO message = new SimpleMessageDTO();
+			message.setMessage("There are no comments on this video!");
+			List<Idto> messages = new LinkedList<Idto>();
+			messages.add(message);
+			return messages;
+		}
 		List<Idto> commentDTOs = new LinkedList<Idto>();
 		
 		for (Comment comment : comments) {
@@ -101,6 +110,13 @@ public class CommentController {
 		}
 		
 		List<Comment> comments = this.commentService.findAllByCommentId(commentId);
+		if (comments == null || comments.isEmpty()) {
+			SimpleMessageDTO message = new SimpleMessageDTO();
+			message.setMessage("There are no subcomments on this comment!");
+			List<Idto> messages = new LinkedList<Idto>();
+			messages.add(message);
+			return messages;
+		}
 		List<Idto> commentDTOs = new LinkedList<Idto>();
 		
 		for (Comment comment : comments) {
@@ -166,6 +182,17 @@ public class CommentController {
 			}
 		}
 		
+		if (this.commentService.getCommentById(commentId).getSuperComment() != null) {
+			try {
+			throw new IllegalSubcommentException("You can't add subcomment on a subcomment!");
+			} catch (IllegalSubcommentException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You can't add subcomment on a subcomment!");
+				return message;
+			}
+		}
+		
 		HttpSession session = request.getSession();
 		if (session == null) {
 			try {
@@ -202,6 +229,7 @@ public class CommentController {
 			}
 		}
 		
+		
 		HttpSession session = request.getSession();
 		if (session == null) {
 			try {
@@ -210,6 +238,20 @@ public class CommentController {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("You are not logged in!");
+				return message;
+			}
+		}
+		
+		long commentOwnerId = this.commentService.getCommentById(commentDTO.getId()).getAuthor().getId();
+		long sessionUserId = (long)session.getAttribute("userId");
+		
+		if (commentOwnerId != sessionUserId) {
+			try {
+			throw new UnauthorizedException("You are allowed to edit only comments posted by you!");
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are allowed to edit only comments posted by you!");
 				return message;
 			}
 		}
@@ -248,6 +290,20 @@ public class CommentController {
 			}
 		}
 		
+		long commentOwnerId = this.commentService.getCommentById(commentId).getAuthor().getId();
+		long sessionUserId = (long)session.getAttribute("userId");
+		
+		if (commentOwnerId != sessionUserId) {
+			try {
+			throw new UnauthorizedException("You are allowed to delete only comments posted by you!");
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You are allowed to delete only comments posted by you!");
+				return message;
+			}
+		}
+		
 		this.commentService.deleteComment(commentId);
 		SimpleMessageDTO message = new SimpleMessageDTO();
 		message.setMessage("Your comment was deleted!");
@@ -255,7 +311,7 @@ public class CommentController {
 	}
 	
 	
-	@PutMapping("/comments-like")
+	@PutMapping("/commentsLike")
 	@ResponseBody
 	public Idto likeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
@@ -289,7 +345,7 @@ public class CommentController {
 	}
 	
 	
-	@PutMapping("/comments-dislike")
+	@PutMapping("/commentsDislike")
 	@ResponseBody
 	public Idto dislikeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		

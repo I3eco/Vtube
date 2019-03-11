@@ -20,6 +20,7 @@ import com.vtube.dto.CreatedVideoDTO;
 import com.vtube.dto.Idto;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.dto.VideoDTO;
+import com.vtube.exceptions.EmptySearchException;
 import com.vtube.exceptions.FileExistsException;
 import com.vtube.exceptions.NotLoggedInException;
 import com.vtube.exceptions.UnauthorizedException;
@@ -83,23 +84,38 @@ public class VideoController {
 	}
 	
 	
-	@GetMapping("/videos/search")
+	@GetMapping("/videosSearch")
 	@ResponseBody
 	public List<Idto> searchVideos(@RequestParam("search") String search) {
 		
+		if (search == null || search.isEmpty()) {
+			try {
+				throw new EmptySearchException("Your search must have at least one letter!");
+			} catch (EmptySearchException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("Your search must have at least one letter!");
+				List<Idto> messages = new LinkedList<Idto>();
+				messages.add(message);
+				return messages;
+			}
+		}
+		
 		List<Video> videos = this.videoService.findAllBySearchString(search);
 		if (videos == null || videos.isEmpty()) {
-			SimpleMessageDTO message = new SimpleMessageDTO();
-			message.setMessage("No videos match your search!");
-			List<Idto> messages = new LinkedList<Idto>();
-			messages.add(message);
-			return messages;
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("No videos match your search!");
+				List<Idto> messages = new LinkedList<Idto>();
+				messages.add(message);
+				return messages;
 		}
 		List<Idto> videoDTOs = new LinkedList<Idto>();
 		
 		for (Video video : videos) {
 			VideoDTO videoDTO = new VideoDTO();
 			this.mapper.map(video, videoDTO);
+			videoDTO.setChannelName(video.getOwner().getName());
+			videoDTO.setChannelId(video.getOwner().getId());
 			videoDTOs.add(videoDTO);
 		}
 		return videoDTOs;
