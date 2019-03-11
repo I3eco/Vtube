@@ -4,4 +4,4 @@ This is our final group project, assigned by [**IT Talents**](https://ittalents.
 
 Hosted at [vtubeto.herokuapp.com](https://vtubeto.herokuapp.com).
 
-You can use [**these requests**](https://github.com/I3eco/vtube/blob/master/VTube.postman_collection.json) with [**postman**](https://www.getpostman.com/downloads/), to try our project.
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/f41f6d8589ac6d4788f3)
