@@ -83,6 +83,10 @@ public class CommentService {
 		comment.setDislikes(comment.getDislikes() + 1);
 		this.commentsRepository.save(comment);
 	}
+
+	public Comment getCommentById(Long commentId) {
+		return this.commentsRepository.findById( (int)((long)commentId) ).get();
+	}
 	
 
 	

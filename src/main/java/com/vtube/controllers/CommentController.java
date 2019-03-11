@@ -21,6 +21,7 @@ import com.vtube.dto.CommentDTO;
 import com.vtube.dto.ContentDTO;
 import com.vtube.dto.Idto;
 import com.vtube.dto.SimpleMessageDTO;
+import com.vtube.exceptions.IllegalSubcommentException;
 import com.vtube.exceptions.NoSuchCommentException;
 import com.vtube.exceptions.NotLoggedInException;
 import com.vtube.exceptions.VideoNotFoundException;
@@ -162,6 +163,17 @@ public class CommentController {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("No such comment!");
+				return message;
+			}
+		}
+		
+		if (this.commentService.getCommentById(commentId).getSuperComment() != null) {
+			try {
+			throw new IllegalSubcommentException("You can't add subcomment on a subcomment!");
+			} catch (IllegalSubcommentException e) {
+				e.printStackTrace();
+				SimpleMessageDTO message = new SimpleMessageDTO();
+				message.setMessage("You can't add subcomment on a subcomment!");
 				return message;
 			}
 		}
