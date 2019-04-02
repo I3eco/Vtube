@@ -13,7 +13,7 @@ import lombok.NonNull;
  */
 @Data
 @NoArgsConstructor
-public class ChannelDTO implements Idto{
+public class ChannelDTO implements IDTO{
 	@NonNull
 	private Long id;
 	

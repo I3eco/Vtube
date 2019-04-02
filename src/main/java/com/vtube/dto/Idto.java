@@ -1,5 +1,5 @@
 package com.vtube.dto;
 
-public interface Idto {
+public interface IDTO {
 
 }

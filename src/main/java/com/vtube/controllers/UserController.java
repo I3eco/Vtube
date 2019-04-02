@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vtube.dto.IDTO;
 import com.vtube.dto.LoginDTO;
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.SimpleMessageDTO;
@@ -36,11 +36,12 @@ import com.vtube.exceptions.UserNotFoundException;
 import com.vtube.exceptions.VideoNotFoundException;
 import com.vtube.service.SessionService;
 import com.vtube.service.UserService;
-import com.vtube.validations.UserValidation;
 
 @RestController
 public class UserController {
 	
+	private static final String APPLICATION_MAIN_PAGE = "https://vtubeto.postman.co";
+
 	@Autowired
 	private UserService userService;
 	
@@ -49,55 +50,45 @@ public class UserController {
 	
 	@PostMapping("/signup")
 	@ResponseBody
-	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request, HttpServletResponse response) throws EmailExistsException, UserExistsException, InvalidEmailException, InvalidNameException, InvalidPasswordException, InvalidAgeException, BadCredentialsException{
+	public UserDTO signUp(@RequestBody SignUpDTO signUpData, HttpServletRequest request)
+			throws BadCredentialsException, InvalidNameException, InvalidEmailException,
+			InvalidPasswordException, InvalidAgeException, EmailExistsException, UserExistsException{
+		UserDTO user = null;
+		
 		try {
 			if(this.session.getUserId(request) != null) {
 				throw new BadCredentialsException("Already logged in!");
 			}
 		} catch (NotLoggedInException e) {
-
+			user = this.userService.signUpUser(signUpData);
+			this.session.createSession(request, user.getId());
 		}
-		UserValidation userValidator = userService.getUserValidator();
-		userValidator.confirm(signUpData);
-		
-		String email = signUpData.getEmail();
-		String nickName = signUpData.getNickName();
-		
-		userService.haveSameEmail(email);
-		userService.haveSameNickName(nickName);
-
-		//encrypt user password
-		signUpData.setPassword(userService.encryptPassword(signUpData.getPassword()));
-		
-		//add user to db and return the proper object to be sent as response
-		UserDTO user = this.userService.createUser(signUpData);
-		
-		this.session.createSession(request, user.getId());
 		
 		return user;
 	}
 	
 	@GetMapping("/")
 	public void mainPage(HttpServletResponse response) throws IOException {
-		response.sendRedirect("https://vtubeto.postman.co");
+		response.sendRedirect(APPLICATION_MAIN_PAGE);
 	}
 	
 	@GetMapping("/user/{id}")
-	public UserDTO getUserById(@PathVariable long id) throws UserNotFoundException {
+	public IDTO getUserById(@PathVariable long id) throws UserNotFoundException {
 		UserDTO user = this.userService.getUserDTOById(id);
 		return user;
 	}
 	
 	@PostMapping("/login")
 	@ResponseBody
-	public SimpleMessageDTO login(@RequestBody LoginDTO user, HttpServletRequest request) throws BadCredentialsException {
+	public IDTO login(@RequestBody LoginDTO user, HttpServletRequest request) throws BadCredentialsException{
 		SimpleMessageDTO message = new SimpleMessageDTO();
-		if(request.getSession(false) != null) {
+		
+		try {
+			this.session.getUserId(request);
 			message.setMessage("Someone is already logged in");
-		} else {
+		} catch (NotLoggedInException e) {
 			Long userId = this.userService.login(user);
-			HttpSession session = request.getSession();
-			session.setAttribute("userId", userId);
+			this.session.createSession(request, userId);
 			message.setMessage("You logged in!");
 		}
 		return message;
@@ -105,14 +96,15 @@ public class UserController {
 	
 	@GetMapping("/logout")
 	@ResponseBody
-	public SimpleMessageDTO logout(HttpServletRequest request){
+	public IDTO logout(HttpServletRequest request){
 		SimpleMessageDTO message = new SimpleMessageDTO();
-		HttpSession session = request.getSession(false);
-		if(session == null) {
-			message.setMessage("Noone is logged in!");
-		} else {
-			session.invalidate();
+		
+		try {
+			this.session.getUserId(request);
+			this.session.invalidateSession();
 			message.setMessage("You logged out!");
+		} catch (NotLoggedInException e) {
+			message.setMessage("Noone is logged in!");
 		}
 		
 		return message;
@@ -120,7 +112,9 @@ public class UserController {
 	
 	@GetMapping("/videos")
 	@ResponseBody
-	public List<VideoDTO> getUserVideos(@RequestParam(name= "watched", required = false) boolean watched, @RequestParam(name= "forLater", required = false) boolean forLater,
+	public List<VideoDTO> getUserVideos(
+			@RequestParam(name= "watched", required = false) boolean watched,
+			@RequestParam(name= "forLater", required = false) boolean forLater,
 			HttpServletRequest request) throws NotLoggedInException{
 		Long userId = this.session.getUserId(request);
 		
@@ -146,51 +140,61 @@ public class UserController {
 	}
 	
 	@PostMapping("/like")
-	public void likeVideo (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+	public IDTO likeVideo (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
 		Long userId = this.session.getUserId(request);
 		if(videoId == null) {
 			throw new VideoNotFoundException("");
 		}
-		this.userService.likeVideo(videoId, userId);
+		
+		IDTO message = this.userService.likeVideo(videoId, userId);
+		
+		return message;
 	}
 	
 	@DeleteMapping("/like")
-	public void removeVideoLike (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+	public IDTO removeVideoLike (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
 		Long userId = this.session.getUserId(request);
 		if(videoId == null) {
 			throw new VideoNotFoundException("");
 		}
 		
-		this.userService.removeVideoLike(videoId, userId);
+		IDTO message = this.userService.removeVideoLike(videoId, userId);
+		
+		return message;
 	}
 	
 	@PostMapping("/dislike")
-	public void dislikeVideo (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+	public IDTO dislikeVideo (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
 		Long userId = this.session.getUserId(request);
 		if(videoId == null) {
 			throw new VideoNotFoundException("");
 		}
-		this.userService.dislikeVideo(videoId, userId);
+		IDTO message = this.userService.dislikeVideo(videoId, userId);
+		
+		return message;
 	}
 	
 	@DeleteMapping("/dislike")
-	public void removeVideoDislike (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+	public IDTO removeVideoDislike (@RequestParam(name= "videoId", required = false) Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
 		Long userId = this.session.getUserId(request);
 		if(videoId == null) {
 			throw new VideoNotFoundException("");
 		}
-		this.userService.removeVideoDislike(videoId, userId);
+		IDTO message = this.userService.removeVideoDislike(videoId, userId);
+		return message;
 	}
 
 	@PostMapping("/subscribe")
-	public void subscribeToChannel(@RequestParam("channelId") Long channelId, HttpServletRequest request) throws NotLoggedInException, ChannelNotFoundException, ConflictException {
+	public IDTO subscribeToChannel(@RequestParam("channelId") Long channelId, HttpServletRequest request) throws NotLoggedInException, ChannelNotFoundException, ConflictException {
 		Long userId = this.session.getUserId(request);
 		
-		this.userService.subscribeToChannel(userId, channelId);		
+		IDTO message = this.userService.subscribeToChannel(userId, channelId);
+		
+		return message;
 	}
 
 	@PostMapping("/watchLater/{videoId}")
-	public SimpleMessageDTO watchVideoLater(@PathVariable Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
+	public IDTO watchVideoLater(@PathVariable Long videoId, HttpServletRequest request) throws NotLoggedInException, VideoNotFoundException {
 		Long userId = this.session.getUserId(request);	
 		
 		SimpleMessageDTO message = this.userService.watchVideoLater(userId, videoId);
