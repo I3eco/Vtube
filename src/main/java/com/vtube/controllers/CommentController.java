@@ -35,19 +35,19 @@ import com.vtube.service.VideoService;
 @RestController
 public class CommentController {
 
-	@Autowired
 	private CommentService commentService;
-	
-	@Autowired
 	private VideoService videoService;
-	
-	@Autowired
 	private ModelMapper mapper;
+	private UserService userService;
 
 	@Autowired
-	private UserService userService;
-	
-	
+	public CommentController(CommentService commentService, VideoService videoService, ModelMapper mapper, UserService userService) {
+		this.commentService = commentService;
+		this.videoService = videoService;
+		this.mapper = mapper;
+		this.userService = userService;
+	}
+
 	@GetMapping("/comments")
 	@ResponseBody
 	public List<Idto> getCommentsByVideo(@RequestParam("videoId") Long videoId) {
