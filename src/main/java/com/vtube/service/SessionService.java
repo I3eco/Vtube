@@ -38,4 +38,8 @@ public class SessionService {
 		
 		return (Long) session.getAttribute(USER_ID);
 	}
+	
+	public void invalidateSession () {
+		this.session.invalidate();
+	}
 }

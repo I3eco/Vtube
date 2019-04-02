@@ -9,10 +9,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.vtube.dal.ChannelsRepository;
 import com.vtube.dal.UsersRepository;
 import com.vtube.dal.VideosRepository;
+import com.vtube.dto.IDTO;
 import com.vtube.dto.LoginDTO;
 import com.vtube.dto.SignUpDTO;
 import com.vtube.dto.SimpleMessageDTO;
@@ -21,6 +23,10 @@ import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.BadCredentialsException;
 import com.vtube.exceptions.ChannelNotFoundException;
 import com.vtube.exceptions.EmailExistsException;
+import com.vtube.exceptions.InvalidAgeException;
+import com.vtube.exceptions.InvalidEmailException;
+import com.vtube.exceptions.InvalidNameException;
+import com.vtube.exceptions.InvalidPasswordException;
 import com.vtube.exceptions.ConflictException;
 import com.vtube.exceptions.UserExistsException;
 import com.vtube.exceptions.UserNotFoundException;
@@ -30,7 +36,6 @@ import com.vtube.model.User;
 import com.vtube.model.Video;
 import com.vtube.validations.UserValidation;
 
-import javassist.expr.NewArray;
 import lombok.NonNull;
 
 /**
@@ -59,7 +64,7 @@ public class UserService {
 	@Autowired
 	private VideoService videoService;
 
-	public UserDTO createUser(SignUpDTO signUpData) {
+	private UserDTO createUser(SignUpDTO signUpData) {
 		User user = this.modelMapper.map(signUpData, User.class);
 
 		user = this.userRepository.save(user);
@@ -67,6 +72,35 @@ public class UserService {
 		UserDTO userDTO = this.convertFromUserToUserDTO(user);
 
 		return userDTO;
+	}
+	
+	private boolean validateUser (SignUpDTO signUpData)
+			throws InvalidNameException, InvalidEmailException, InvalidPasswordException, InvalidAgeException, EmailExistsException, UserExistsException {
+		UserValidation userValidator = this.getUserValidator();
+		userValidator.confirm(signUpData);
+		
+		String email = signUpData.getEmail();
+		String nickName = signUpData.getNickName();
+		
+		this.haveSameEmail(email);
+		this.haveSameNickName(nickName);
+		
+		return true;
+	}
+	
+	public UserDTO signUpUser (SignUpDTO signUpData)
+			throws InvalidNameException, InvalidEmailException, InvalidPasswordException, InvalidAgeException, EmailExistsException, UserExistsException {
+		UserDTO user = null;
+		
+		if(this.validateUser(signUpData)) {
+			//encrypt user password
+			signUpData.setPassword(this.encryptPassword(signUpData.getPassword()));
+			
+			//add user to db and return the proper object to be sent as response
+			user = this.createUser(signUpData);
+		}
+		
+		return user;
 	}
 
 	public UserDTO convertFromUserToUserDTO(User user) {
@@ -189,7 +223,8 @@ public class UserService {
 		return likedVideosDTO;
 	}
 
-	public void likeVideo(Long videoId, Long userId) throws VideoNotFoundException {
+	@Transactional
+	public IDTO likeVideo(Long videoId, Long userId) throws VideoNotFoundException {
 		Video video = null;
 		
 		try {
@@ -199,10 +234,12 @@ public class UserService {
 		}
 		
 		User user = this.userRepository.findById(userId).get();
+		SimpleMessageDTO message = new SimpleMessageDTO();
 		
 		//if user've already liked this video
 		if(user.getLikedVideos().contains(video)) {
-			return;
+			message.setMessage("Already liked");
+			return message;
 		}
 		
 		//if user've already dislike this video
@@ -214,9 +251,14 @@ public class UserService {
 		
 		user.getLikedVideos().add(video);
 		this.userRepository.save(user);
+		
+		message.setMessage("Liked");
+		
+		return message;
 	}
 
-	public void removeVideoLike(Long videoId, Long userId) throws VideoNotFoundException {
+	@Transactional
+	public IDTO removeVideoLike(Long videoId, Long userId) throws VideoNotFoundException {
 		Video video = null;
 		
 		try {
@@ -226,10 +268,12 @@ public class UserService {
 		}
 		
 		User user = this.userRepository.findById(userId).get();
+		SimpleMessageDTO message = new SimpleMessageDTO();
 		
 		//if user've already liked this video
 		if(!user.getLikedVideos().contains(video)) {
-			return;
+			message.setMessage("No like on this video");
+			return message;
 		}
 		
 		video.getUsersWhoLikeThisVideo().remove(user);
@@ -238,9 +282,13 @@ public class UserService {
 		user.getLikedVideos().remove(video);
 		this.userRepository.save(user);
 		
+		message.setMessage("Like removed");
+		
+		return message;
 	}
 
-	public void dislikeVideo(Long videoId, Long userId) throws VideoNotFoundException {
+	@Transactional
+	public IDTO dislikeVideo(Long videoId, Long userId) throws VideoNotFoundException {
 		Video video = null;
 		
 		try {
@@ -250,10 +298,12 @@ public class UserService {
 		}
 		
 		User user = this.userRepository.findById(userId).get();
+		SimpleMessageDTO message = new SimpleMessageDTO();
 		
 		//if user've already disliked this video
 		if(video.getUsersWhoDisLikeThisVideo().contains(user)) {
-			return;
+			message .setMessage("Already disliked");
+			return message;
 		}
 		
 		//if user've already liked this video
@@ -264,9 +314,14 @@ public class UserService {
 		
 		video.getUsersWhoDisLikeThisVideo().add(user);
 		this.videosRepository.save(video);
+		
+		message.setMessage("Disliked");
+		
+		return message;
 	}
 	
-	public void removeVideoDislike(Long videoId, Long userId) throws VideoNotFoundException {
+	@Transactional
+	public IDTO removeVideoDislike(Long videoId, Long userId) throws VideoNotFoundException {
 		Video video = null;
 		
 		try {
@@ -276,16 +331,23 @@ public class UserService {
 		}
 		
 		User user = this.userRepository.findById(userId).get();
+		SimpleMessageDTO message = new SimpleMessageDTO();
 		
 		if(!video.getUsersWhoDisLikeThisVideo().contains(user)) {
-			return;
+			message .setMessage("No dislike on this video");
+			return message;
 		}
 		
 		video.getUsersWhoDisLikeThisVideo().remove(user);
 		this.videosRepository.save(video);
+		
+		message.setMessage("Dislike removed");
+		
+		return message;
 	}
 
-	public void subscribeToChannel(Long userId, Long channelId) throws ChannelNotFoundException, ConflictException {
+	@Transactional
+	public IDTO subscribeToChannel(Long userId, Long channelId) throws ChannelNotFoundException, ConflictException {
 		Channel channel = null;
 		try {
 			channel = this.channelRepository.findById(channelId).get();
@@ -299,21 +361,22 @@ public class UserService {
 		
 		User user = this.userRepository.findById(userId).get();
 		
-/*
- * 		In like/dislike video logic, I made one method for like on post request, and other for dislike on delete request.
-		Since I wonder if it isn't better just to make one method with simple post request,
-		I will implement the logic here.
- */
+		SimpleMessageDTO message = new SimpleMessageDTO();
+		
 		if(user.getSubscribedChannels().contains(channel)) {
 			user.getSubscribedChannels().remove(channel);
 			channel.getUsersSubscribedToChannel().remove(user);
+			message.setMessage("Unsubscribed");
 		} else {
 			user.getSubscribedChannels().add(channel);
 			channel.getUsersSubscribedToChannel().add(user);
+			message.setMessage("Subscribed");
 		}
 		
 		this.userRepository.save(user);
 		this.channelRepository.save(channel);
+		
+		return message;
 	}
 
 	public SimpleMessageDTO watchVideoLater(Long userId, Long videoId) throws VideoNotFoundException {

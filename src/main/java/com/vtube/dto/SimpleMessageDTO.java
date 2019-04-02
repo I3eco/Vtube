@@ -10,7 +10,7 @@ import lombok.NonNull;
  */
 @Data
 @NoArgsConstructor
-public class SimpleMessageDTO implements Idto{
+public class SimpleMessageDTO implements IDTO{
 	@NonNull
 	private String message;
 }

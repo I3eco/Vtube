@@ -12,7 +12,7 @@ import lombok.NonNull;
  */
 @Data
 @NoArgsConstructor
-public class LoginDTO implements Idto{
+public class LoginDTO implements IDTO{
 	@NonNull
 	private String email;
 	

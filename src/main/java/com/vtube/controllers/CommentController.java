@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vtube.dto.CommentDTO;
 import com.vtube.dto.ContentDTO;
-import com.vtube.dto.Idto;
+import com.vtube.dto.IDTO;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.exceptions.IllegalSubcommentException;
 import com.vtube.exceptions.NoSuchCommentException;
@@ -50,7 +50,7 @@ public class CommentController {
 
 	@GetMapping("/comments")
 	@ResponseBody
-	public List<Idto> getCommentsByVideo(@RequestParam("videoId") Long videoId) {
+	public List<IDTO> getCommentsByVideo(@RequestParam("videoId") Long videoId) {
 		
 		if (!this.videoService.findById(videoId) ) {
 			try {
@@ -59,7 +59,7 @@ public class CommentController {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("No such video!");
-				List<Idto> messages = new LinkedList<Idto>();
+				List<IDTO> messages = new LinkedList<IDTO>();
 				messages.add(message);
 				return messages;
 			}
@@ -69,11 +69,11 @@ public class CommentController {
 		if (comments == null || comments.isEmpty()) {
 			SimpleMessageDTO message = new SimpleMessageDTO();
 			message.setMessage("There are no comments on this video!");
-			List<Idto> messages = new LinkedList<Idto>();
+			List<IDTO> messages = new LinkedList<IDTO>();
 			messages.add(message);
 			return messages;
 		}
-		List<Idto> commentDTOs = new LinkedList<Idto>();
+		List<IDTO> commentDTOs = new LinkedList<IDTO>();
 		
 		for (Comment comment : comments) {
 			CommentDTO commentDTO = new CommentDTO();
@@ -94,7 +94,7 @@ public class CommentController {
 	
 	@GetMapping("/commentReplies")
 	@ResponseBody
-	public List<Idto> getCommentsBySupercomment(@RequestParam("commentId") Long commentId) {
+	public List<IDTO> getCommentsBySupercomment(@RequestParam("commentId") Long commentId) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {
@@ -103,7 +103,7 @@ public class CommentController {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("No such comment!");
-				List<Idto> messages = new LinkedList<Idto>();
+				List<IDTO> messages = new LinkedList<IDTO>();
 				messages.add(message);
 				return messages;
 			}
@@ -113,11 +113,11 @@ public class CommentController {
 		if (comments == null || comments.isEmpty()) {
 			SimpleMessageDTO message = new SimpleMessageDTO();
 			message.setMessage("There are no subcomments on this comment!");
-			List<Idto> messages = new LinkedList<Idto>();
+			List<IDTO> messages = new LinkedList<IDTO>();
 			messages.add(message);
 			return messages;
 		}
-		List<Idto> commentDTOs = new LinkedList<Idto>();
+		List<IDTO> commentDTOs = new LinkedList<IDTO>();
 		
 		for (Comment comment : comments) {
 			CommentDTO commentDTO = new CommentDTO();
@@ -132,7 +132,7 @@ public class CommentController {
 	
 	@PostMapping("/comments")
 	@ResponseBody
-	public Idto addComment(@RequestParam("videoId") Long videoId,
+	public IDTO addComment(@RequestParam("videoId") Long videoId,
 			@RequestBody ContentDTO contentDTO, HttpServletRequest request) {
 		
 		if (!this.videoService.findById(videoId)) {
@@ -168,7 +168,7 @@ public class CommentController {
 	
 	@PostMapping("/subcomments")
 	@ResponseBody
-	public Idto addSubComment(@RequestParam("commentId") Long commentId,
+	public IDTO addSubComment(@RequestParam("commentId") Long commentId,
 			@RequestBody ContentDTO contentDTO, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
@@ -216,7 +216,7 @@ public class CommentController {
 	
 	@PutMapping("/comments")
 	@ResponseBody
-	public Idto editComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
+	public IDTO editComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request) {
 	
 		if (!this.commentService.findById(((long)commentDTO.getId())) ) {
 			try {
@@ -265,7 +265,7 @@ public class CommentController {
 	
 	@DeleteMapping("/comments")
 	@ResponseBody
-	public Idto deleteComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
+	public IDTO deleteComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {
@@ -313,7 +313,7 @@ public class CommentController {
 	
 	@PutMapping("/commentsLike")
 	@ResponseBody
-	public Idto likeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
+	public IDTO likeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {
@@ -347,7 +347,7 @@ public class CommentController {
 	
 	@PutMapping("/commentsDislike")
 	@ResponseBody
-	public Idto dislikeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
+	public IDTO dislikeComment(@RequestParam("commentId") Long commentId, HttpServletRequest request) {
 		
 		if (!this.commentService.findById(commentId)) {
 			try {

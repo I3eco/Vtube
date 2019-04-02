@@ -2,7 +2,6 @@ package com.vtube.controllers;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vtube.dto.BigVideoDTO;
 import com.vtube.dto.CreatedVideoDTO;
-import com.vtube.dto.Idto;
+import com.vtube.dto.IDTO;
 import com.vtube.dto.SimpleMessageDTO;
 import com.vtube.dto.VideoDTO;
 import com.vtube.exceptions.EmptySearchException;
@@ -90,7 +89,7 @@ public class VideoController {
 	
 	@GetMapping("/videosSearch")
 	@ResponseBody
-	public List<Idto> searchVideos(@RequestParam("search") String search) {
+	public List<IDTO> searchVideos(@RequestParam("search") String search) {
 		
 		if (search == null || search.isEmpty()) {
 			try {
@@ -99,7 +98,7 @@ public class VideoController {
 				e.printStackTrace();
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("Your search must have at least one letter!");
-				List<Idto> messages = new LinkedList<Idto>();
+				List<IDTO> messages = new LinkedList<IDTO>();
 				messages.add(message);
 				return messages;
 			}
@@ -109,11 +108,11 @@ public class VideoController {
 		if (videos == null || videos.isEmpty()) {
 				SimpleMessageDTO message = new SimpleMessageDTO();
 				message.setMessage("No videos match your search!");
-				List<Idto> messages = new LinkedList<Idto>();
+				List<IDTO> messages = new LinkedList<IDTO>();
 				messages.add(message);
 				return messages;
 		}
-		List<Idto> videoDTOs = new LinkedList<Idto>();
+		List<IDTO> videoDTOs = new LinkedList<IDTO>();
 		
 		for (Video video : videos) {
 			VideoDTO videoDTO = new VideoDTO();
@@ -128,7 +127,7 @@ public class VideoController {
 	
 	@DeleteMapping("/videos")
 	@ResponseBody
-	public Idto deleteVideo(@RequestParam("videoId") Long videoId, HttpServletRequest request) throws UnauthorizedException, NotLoggedInException, VideoNotFoundException {
+	public IDTO deleteVideo(@RequestParam("videoId") Long videoId, HttpServletRequest request) throws UnauthorizedException, NotLoggedInException, VideoNotFoundException {
 		
 		if (!this.videoService.findById(videoId)) {
 			throw new VideoNotFoundException("No such video!");

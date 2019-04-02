@@ -14,7 +14,7 @@ import lombok.NonNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmallVideoDTO implements Idto{
+public class SmallVideoDTO implements IDTO{
 	@NonNull
 	private Long id;
 	

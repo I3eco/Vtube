@@ -11,7 +11,7 @@ import lombok.NonNull;
  */
 @Data
 @NoArgsConstructor
-public class UserDTO implements Idto{
+public class UserDTO implements IDTO{
 	@NonNull
 	private Long id;
 	
